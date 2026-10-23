@@ -1,0 +1,424 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:smr-ga:schema:ir-1.0",
+  "title": "SMR GA Design Intent IR",
+  "description": "Gate 1 에서 동결되는 설계의도 중간표현. LLM 은 이 문서를 '작성' 하고, 좌표는 한 개도 쓰지 않는다. 좌표는 솔버만 만든다.",
+  "type": "object",
+  "required": [
+    "project",
+    "blocks"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "_schema": {
+      "type": "string",
+      "const": "smr-ga-ir/1.0"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "n_floors": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "floor_heights": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "max_w": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "max_d": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "aspect_max": {
+      "type": "number",
+      "minimum": 1
+    },
+    "grid_m": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "default": 6.096,
+      "description": "격자 모듈. 기본값 6.096 m 는 10 CFR 50 App.R III.G.2 의 20 ft 이며 GA 의 실질 그리드 모듈이다."
+    },
+    "crane_bay": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "description": "[x0,y0,x1,y1] 외피에 대한 상대 비율"
+    },
+    "weights": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      },
+      "description": "목적함수 항 가중치와 constraint.<ID> 형식의 제약 가중치. hard 항 가중치는 validate_spec 의 '한계이득' 하한을 넘어야 한다."
+    },
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "w",
+          "d"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "w": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "폭 [m]"
+          },
+          "d": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "깊이 [m]"
+          },
+          "h": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "높이 [m]"
+          },
+          "clearance": {
+            "type": "number",
+            "minimum": 0,
+            "description": "사방 유지보수/접근 이격 [m]"
+          },
+          "rotatable": {
+            "type": "boolean"
+          },
+          "floor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "기준층 고정. null 이면 최적화 대상."
+          },
+          "zone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "방사선/계통 구역 라벨. ★ 'Zone I'~'Zone V' 같은 번호 체계를 쓰지 말 것 — RG 8.8 은 구역 번호를 일절 언급하지 않는다. 10 CFR 20.1003 정의로 매핑한 라벨을 쓴다."
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "중량 [ton]"
+          },
+          "need_exterior": {
+            "type": "boolean"
+          },
+          "need_crane": {
+            "type": "boolean"
+          },
+          "fixed_xy": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number"
+            },
+            "description": "블록 중심 좌표 [m]. pinned=false 면 위반 거리만큼 페널티(soft 고정), pinned=true 면 정확히 고정. LLM 이 쓰지 않는다 — 도면 파서가 쓴다."
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "instances": {
+            "type": "array",
+            "description": "count>1 일 때 인스턴스별 속성. 중복 계열의 train/fire_zone 처럼 복제본마다 달라야 하는 값은 여기에 명시한다. 엔진은 추정하지 않는다.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "fire_zone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "train": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "다중성 계열 (A/B/C/D)"
+          },
+          "structure": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "내진 이격 단위(건물)"
+          },
+          "vital_area": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "success_path": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "App. R 고온정지 성공경로 계열"
+          },
+          "opening": {
+            "type": "boolean",
+            "description": "대형 미방호 개구부(해치·계단). FIRE-HATCH 가 화재구역 병합을 판정한다."
+          },
+          "turbine": {
+            "type": "boolean",
+            "description": "터빈 — 방위각이 이산 결정변수가 된다"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "equipment",
+              "room",
+              "obstacle",
+              "void",
+              "opening"
+            ],
+            "description": "equipment/room = 배치 대상, obstacle = 움직일 수 없는 것(코어·기둥·격납), void = 배치 금지 영역, opening = 해치·계단"
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "true 면 fixed_xy(중심)·floor 에 정확히 고정된 장애물. 나머지 블록이 피해 간다. fixed_xy 와 floor 가 필수이며, 좌표는 도면 파서만 쓴다 — LLM 이 쓰지 않는다."
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "a",
+          "b"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "pipe",
+              "cable",
+              "duct",
+              "route"
+            ]
+          },
+          "vertical_factor": {
+            "type": "number",
+            "minimum": 1,
+            "description": "층간(수직) 이동의 상대 비용 λ. 3~5 권장 — 관통부·서포트·양정 때문에 수평보다 비싸다."
+          }
+        }
+      }
+    },
+    "separations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "a",
+          "b",
+          "min_dist"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "string"
+          },
+          "min_dist": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "중심 간이 아니라 '외곽 간 간극' 요구값 [m]"
+          },
+          "by_zone": {
+            "type": "boolean"
+          },
+          "hard": {
+            "type": "boolean"
+          },
+          "basis": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "근거 조항. 인용 없는 수치는 IR 에 들어가면 안 된다."
+          }
+        }
+      }
+    },
+    "elevations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "above",
+          "below"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "above": {
+            "type": "string"
+          },
+          "below": {
+            "type": "string"
+          },
+          "min_dz": {
+            "type": "number",
+            "minimum": 0
+          },
+          "basis": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "description": "사전 검증된 제약 라이브러리에서 '선택' 한다. LLM 이 수식을 발명하지 않는다.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "FIRE-20FT",
+              "FIRE-HATCH",
+              "TURBINE-25",
+              "SEISMIC-GAP",
+              "HELB-DIST",
+              "TALL-EQUIP",
+              "FREE-AREA",
+              "LOAD-PATH",
+              "VITAL-AREA",
+              "ELEC-SEP"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0
+          },
+          "params": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "_frozen": {
+      "type": "object",
+      "description": "validate_spec.py --freeze 가 기록한다. 사람이 손으로 쓰지 않는다.",
+      "properties": {
+        "ir_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "ir_schema_version": {
+          "type": "string"
+        }
+      }
+    },
+    "preset": {
+      "type": "string",
+      "enum": [
+        "balanced",
+        "space_first"
+      ],
+      "description": "가중치 프리셋. space_first = '공간을 작게' 가 1순위 (체적 외 연성 항을 낮춘다). 명시한 weights 가 항상 우선한다. hard 항 가중치는 프리셋이 정하지 않는다."
+    },
+    "drawing_source": {
+      "type": "array",
+      "description": "이 IR 이 만들어진 원본 도면들. 도면 파서(결정론적)가 기록한다. 사람이 손으로 쓰지 않는다.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "takeoff_sha256": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "asis_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "현황 배치(asis.json) 해시. 개선량 비교가 이 파일로부터 재현된다."
+    }
+  }
+}

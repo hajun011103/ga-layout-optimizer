@@ -1,0 +1,112 @@
+{
+  "_schema": "smr-ga-ir/1.0",
+  "project": "NEGATIVE CONTROL — 의도적으로 실현 불가능한 요구사항 집합",
+  "_note": "이 파일은 통과하면 안 된다. 에이전트/엔진이 '불가능' 이라고 답하는지 확인하는 음성 대조군이다. LLM 파이프라인은 유창하게 실패하므로 이 시험을 정례화해야 한다.",
+  "_expected": [
+    "면적 초과로 실현 불가",
+    "표고 제약 모순 (층 고정값이 반대)",
+    "치수 누락",
+    "금지 수치: 전기계통 이격 3 ft",
+    "금지: Safeguards Information 파라미터에 값이 채워짐",
+    "금지: 방사선구역 번호 체계 하드코딩",
+    "단일 블록이 외피 한계보다 큼 (알아서 줄이지 않는다)"
+  ],
+  "n_floors": 1,
+  "floor_heights": [
+    5.0
+  ],
+  "max_w": 20.0,
+  "max_d": 20.0,
+  "blocks": [
+    {
+      "id": "BIG1",
+      "name": "대형기기 1",
+      "w": 22.0,
+      "d": 18.0,
+      "h": 4.0,
+      "clearance": 1.0,
+      "zone": "Zone III"
+    },
+    {
+      "id": "BIG2",
+      "name": "대형기기 2",
+      "w": 18.0,
+      "d": 18.0,
+      "h": 4.0,
+      "clearance": 1.0,
+      "zone": "Zone III"
+    },
+    {
+      "id": "NODIM",
+      "name": "치수 미상 기기",
+      "d": 3.0,
+      "h": 3.0,
+      "clearance": 1.0,
+      "zone": "NR"
+    },
+    {
+      "id": "LOW",
+      "name": "하부 기기",
+      "w": 3.0,
+      "d": 3.0,
+      "h": 3.0,
+      "clearance": 1.0,
+      "zone": "NR",
+      "floor": 0
+    },
+    {
+      "id": "HIGH",
+      "name": "상부 탱크",
+      "w": 4.0,
+      "d": 4.0,
+      "h": 4.0,
+      "clearance": 1.0,
+      "zone": "NR",
+      "floor": 0
+    }
+  ],
+  "links": [
+    {
+      "a": "LOW",
+      "b": "HIGH",
+      "cost": 3.0
+    }
+  ],
+  "elevations": [
+    {
+      "above": "LOW",
+      "below": "HIGH",
+      "min_dz": 5.0,
+      "basis": "의도적 모순 — 두 블록 모두 0층에 고정되어 있다"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "ELEC-SEP",
+      "_why": "★ 금지 수치 감시 시험 — 3 ft(0.9144 m) 는 IEEE 384-1981 관행값이다",
+      "params": {
+        "groups": [
+          [
+            "LOW"
+          ],
+          [
+            "HIGH"
+          ]
+        ],
+        "min_horizontal_m": 0.9144,
+        "citation": null
+      }
+    },
+    {
+      "id": "VITAL-AREA",
+      "_why": "★ SGI 슬롯에 값을 넣으면 안 된다는 규칙의 시험",
+      "params": {
+        "vital_blocks": [
+          "LOW"
+        ],
+        "max_areas": 1,
+        "vehicle_barrier_standoff_m": 30.0
+      }
+    }
+  ]
+}

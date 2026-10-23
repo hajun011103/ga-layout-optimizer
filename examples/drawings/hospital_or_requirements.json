@@ -1,0 +1,345 @@
+{
+ "_note": "병원 수술부 설계요건 (가정값). 청결-오염 동선 분리와 수술실-멸균코어 인접이 핵심.",
+ "set": {
+  "floor_heights": [
+   4.5
+  ]
+ },
+ "blocks": [
+  {
+   "id": "RM013",
+   "name": "OR-1 수술실 1",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM014",
+   "name": "OR-2 수술실 2",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM015",
+   "name": "OR-3 수술실 3",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM016",
+   "name": "OR-4 수술실 4",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM018",
+   "name": "OR-5 수술실 5",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM019",
+   "name": "OR-6 수술실 6 (하이브리드)",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM017",
+   "name": "SCRUB-1 스크럽",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM020",
+   "name": "SCRUB-2 스크럽 2",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM012",
+   "name": "CORR-N 북측 청결복도",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM008",
+   "name": "CORE 멸균물품 코어",
+   "zone": "STERILE",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM009",
+   "name": "CSSD 중앙공급실",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM010",
+   "name": "CLEAN 청결 창고",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM011",
+   "name": "SOIL 오염 처리실",
+   "zone": "DIRTY",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM007",
+   "name": "ANES 마취 준비",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM006",
+   "name": "CORR-S 남측 일반복도",
+   "zone": "UNRES",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM001",
+   "name": "PREOP 수술 전 대기",
+   "zone": "UNRES",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM002",
+   "name": "PACU 회복실",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM003",
+   "name": "LOUNGE 직원 휴게",
+   "zone": "UNRES",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM004",
+   "name": "LOCKER 탈의실",
+   "zone": "UNRES",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "id": "RM005",
+   "name": "STORE 장비 창고",
+   "zone": "SEMI",
+   "clearance": 0.0,
+   "h": 4.5
+  },
+  {
+   "all": true,
+   "kind_filter": "equipment",
+   "kind": "room"
+  }
+ ],
+ "remove_links": "inferred",
+ "add_links": [
+  {
+   "a": "RM013",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM014",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM015",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM016",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM018",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM019",
+   "b": "RM008",
+   "cost": 5,
+   "kind": "route"
+  },
+  {
+   "a": "RM013",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM014",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM015",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM016",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM018",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM019",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM017",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM020",
+   "b": "RM012",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM008",
+   "b": "RM009",
+   "cost": 4,
+   "kind": "route"
+  },
+  {
+   "a": "RM009",
+   "b": "RM011",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM010",
+   "b": "RM008",
+   "cost": 2,
+   "kind": "route"
+  },
+  {
+   "a": "RM002",
+   "b": "RM006",
+   "cost": 4,
+   "kind": "route"
+  },
+  {
+   "a": "RM001",
+   "b": "RM006",
+   "cost": 4,
+   "kind": "route"
+  },
+  {
+   "a": "RM007",
+   "b": "RM012",
+   "cost": 2,
+   "kind": "route"
+  },
+  {
+   "a": "RM012",
+   "b": "RM006",
+   "cost": 3,
+   "kind": "route"
+  },
+  {
+   "a": "RM004",
+   "b": "RM006",
+   "cost": 2,
+   "kind": "route"
+  },
+  {
+   "a": "RM003",
+   "b": "RM006",
+   "cost": 1,
+   "kind": "route"
+  },
+  {
+   "a": "RM005",
+   "b": "RM012",
+   "cost": 2,
+   "kind": "route"
+  },
+  {
+   "a": "RM011",
+   "b": "RM006",
+   "cost": 2,
+   "kind": "route"
+  }
+ ],
+ "add_separations": [
+  {
+   "a": "RM011",
+   "b": "RM008",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 의료기관 시설기준·감염관리 지침 원문 대조)"
+  },
+  {
+   "a": "RM011",
+   "b": "RM010",
+   "min_dist": 3.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 의료기관 시설기준·감염관리 지침 원문 대조)"
+  },
+  {
+   "a": "RM011",
+   "b": "RM019",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 의료기관 시설기준·감염관리 지침 원문 대조)"
+  },
+  {
+   "a": "RM011",
+   "b": "RM018",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 의료기관 시설기준·감염관리 지침 원문 대조)"
+  }
+ ],
+ "answered_questions": [
+  "floor_heights",
+  "clearance",
+  "links",
+  "zones_separations",
+  "names"
+ ]
+}

@@ -1,0 +1,42 @@
+{
+  "ir_path": "examples/spec_smr_aux.json",
+  "ir_sha256": "a12ba42e8ae0bac387a56e3e2abce0bf74f4e84ee8e490fd6bf42d2e53e43077",
+  "seed": 20260826,
+  "engine_version": "0.2.0",
+  "ir_schema_version": "1.0",
+  "mode": "sa",
+  "params": {
+    "iters": 60000,
+    "restarts": 6,
+    "pop": 60,
+    "gens": 60,
+    "areas": 3,
+    "sweep_floors": null,
+    "pick": null
+  },
+  "gate1": {
+    "errors": 0,
+    "warnings": 1,
+    "skipped": false
+  },
+  "result_sha256": "292a27e601605bf5e29eab40af8ff34b7b9dc22f0ffb26b4da7c745a1787eb20",
+  "objective": 102279.981218,
+  "envelope": {
+    "W": 51.0,
+    "D": 45.8,
+    "H": 32.0
+  },
+  "hard_violation_count": 0,
+  "hard_violations": [],
+  "outputs": [
+    "GA_optimized_floor1.svg",
+    "GA_optimized_floor2.svg",
+    "GA_optimized_floor3.svg",
+    "GA_optimized.dxf",
+    "GA_optimized.json",
+    "GA_baseline_floor1.svg",
+    "result.json",
+    "run_manifest.json"
+  ],
+  "wall_time_s": 206.4
+}

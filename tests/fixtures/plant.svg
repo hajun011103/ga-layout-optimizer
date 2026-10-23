@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     width="300mm" height="200mm" viewBox="0 0 3000 2000">
+  <defs><rect id="defs-rect-should-be-ignored" x="0" y="0" width="99" height="99"/></defs>
+  <rect id="site-boundary" x="0" y="0" width="3000" height="2000" fill="none"/>
+  <g id="layer1" inkscape:label="1F">
+    <g id="rooms" transform="translate(100,100)">
+      <path id="room-A" d="M0,0 H1000 V800 H0 Z"/>
+      <path id="room-B" d="m1100,0 l800,0 0,800 -800,0z"/>
+    </g>
+    <g id="equip" transform="translate(200,200)">
+      <rect id="P-201" x="0" y="0" width="200" height="100"/>
+      <text x="50" y="50"><tspan>P-201</tspan></text>
+      <text x="50" y="80">급수펌프</text>
+      <g transform="translate(1500,200) rotate(90)">
+        <rect class="pump" x="0" y="0" width="300" height="100"/>
+      </g>
+      <text x="1450" y="350">P-202</text>
+    </g>
+    <circle class="column" cx="1050" cy="1500" r="25"/>
+    <text x="300" y="800">펌프실</text>
+    <g id="tank-lines" class="equipment">
+      <line x1="300" y1="1200" x2="600" y2="1200"/>
+      <line x1="600" y1="1200" x2="600" y2="1400"/>
+      <line x1="600" y1="1400" x2="300" y2="1400"/>
+      <line x1="300" y1="1400" x2="300" y2="1200"/>
+    </g>
+    <text x="400" y="1300">TK-101</text>
+    <g id="dim"><text x="2500" y="1900">치수 30000</text></g>
+  </g>
+  <g id="layer2" inkscape:label="2F" transform="matrix(1,0,0,1,0,0)">
+    <path id="room-C" class="room" d="M 200 1200 C 200 1200 700 1200 700 1200 L7e2,1.6e3 L200,1600 Z"/>
+    <text x="300" y="1500">제어실</text>
+  </g>
+</svg>

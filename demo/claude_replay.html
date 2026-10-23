@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code 세션 재생</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a1a1f;color:#e7e5df;font:15px/1.5 Consolas,"Malgun Gothic",Menlo,monospace;height:100vh;display:flex;flex-direction:column}
+.bar{background:#26262c;padding:10px 16px;color:#a9a7a0;font:13px "Malgun Gothic",system-ui,sans-serif;display:flex;gap:14px}
+.bar b{color:#e7e5df}
+.bar .tag{margin-left:auto;color:#f0b86e}
+#out{flex:1;overflow:auto;padding:18px 26px 40px}
+.user{border:1px solid #4b4a52;border-radius:8px;padding:10px 14px;margin:0 0 16px;color:#f2f1ec;background:#222228}
+.user:before{content:"> ";color:#d97757;font-weight:700}
+.call{margin:10px 0 0;color:#f2f1ec}
+.call:before{content:"⏺ ";color:#6fcf97}
+.call .n{color:#7aa2ff;font-weight:700}
+.call .a{color:#a9a7a0}
+.res{margin:2px 0 0 22px;color:#9b998f;white-space:pre-wrap;word-break:break-all}
+.res:before{content:"⎿  "}
+.say{margin:16px 0 0;white-space:pre-wrap;color:#f2f1ec;font-family:"Malgun Gothic",system-ui,sans-serif;font-size:15.5px;line-height:1.6}
+.say:before{content:"⏺ ";color:#e7e5df}
+.cur{display:inline-block;width:8px;height:16px;background:#d97757;vertical-align:-2px;animation:b 1s step-end infinite}
+@keyframes b{50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="bar"><b>Claude Code</b> · <span>claude -p … --mcp-config (smr-ga MCP 서버) · 2026-10-22 실제 실행 기록</span><span class="tag">재생 — 내용은 그대로, 속도만 조절</span></div>
+<div id="out"></div>
+<script>
+const out = document.getElementById("out");
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function el(cls, html){ const d = document.createElement("div"); d.className = cls; d.innerHTML = html; out.appendChild(d); out.scrollTop = out.scrollHeight; return d; }
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+async function type(node, text, cps){
+  for (let i = 0; i < text.length; i += 3){ node.textContent = text.slice(0, i + 3); out.scrollTop = out.scrollHeight; await sleep(1000 / cps * 3); }
+}
+window.start = async function(prompt, steps, speed){
+  speed = speed || 1;
+  const u = el("user", ""); await type(u, prompt, 90 * speed); await sleep(900 / speed);
+  for (const s of steps){
+    if (s[0] === "call"){
+      if (s[1] === "ToolSearch") continue;
+      const name = s[1].replace("mcp__smr-ga__", "");
+      let args = s[2]; if (args.length > 140) args = args.slice(0, 140) + "…";
+      el("call", `<span class="n">smr-ga - ${esc(name)}</span> <span class="a">(MCP)(${esc(args)})</span>`);
+      await sleep(700 / speed);
+    } else if (s[0] === "res"){
+      if (!s[1]) continue;
+      el("res", esc(s[1].slice(0, 170) + (s[1].length > 170 ? " …" : "")));
+      await sleep(1200 / speed);
+    } else if (s[0] === "say"){
+      const d = el("say", ""); await type(d, s[1], 260 * speed);
+      await sleep(400);
+      break;
+    }
+  }
+  el("", '<span class="cur"></span>');
+  window.done = true;
+};
+</script>
+</body>
+</html>

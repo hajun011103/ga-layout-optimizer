@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GA Studio</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1b1b19;--mut:#6b6a64;--line:#e3e1da;--acc:#1f4fd1;--acc2:#e8eefc;--good:#0f766e;--bad:#be123c;--warn:#a16207;--chip:#f1f0eb}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141413;--card:#1d1d1b;--fg:#ecebe5;--mut:#a09f98;--line:#33322e;--acc:#7aa2ff;--acc2:#1f2a44;--good:#5eead4;--bad:#fda4af;--warn:#fcd34d;--chip:#2a2a27}}
+:root[data-theme="dark"]{--bg:#141413;--card:#1d1d1b;--fg:#ecebe5;--mut:#a09f98;--line:#33322e;--acc:#7aa2ff;--acc2:#1f2a44;--good:#5eead4;--bad:#fda4af;--warn:#fcd34d;--chip:#2a2a27}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14.5px/1.55 "Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif}
+header{padding:18px 20px 12px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;letter-spacing:-.2px}
+header .sub{color:var(--mut);font-size:13px}
+.badge{border:1.5px solid var(--bad);color:var(--bad);font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px}
+.conn{margin-left:auto;font-size:12.5px;color:var(--mut)}
+.conn b{color:var(--good)}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;padding:16px 20px 60px;max-width:1500px;margin:0 auto}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card h2{font-size:15.5px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:700}
+.card.dim{opacity:.55}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0}
+input[type=number]{width:110px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:8px 14px;background:var(--acc);color:#fff;cursor:pointer}
+button.ghost{background:var(--chip);color:var(--fg)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--mut);cursor:pointer;transition:.15s}
+.drop.hover{border-color:var(--acc);background:var(--acc2);color:var(--fg)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{background:var(--chip);border-radius:999px;padding:3px 10px;font-size:12.5px}
+.chip b{font-variant-numeric:tabular-nums}
+.warns{font-size:12.5px;color:var(--warn);margin:6px 0 0;padding-left:18px}
+.errs{font-size:12.5px;color:var(--bad);margin:6px 0 0;padding-left:18px}
+.qs{margin:0;padding-left:18px}.qs li{margin:6px 0}.qs small{color:var(--mut);display:block}
+.imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:800px){.imgs{grid-template-columns:1fr}}
+figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px;overflow:hidden}
+figure img{width:100%;display:block}
+figcaption{font-size:12.5px;color:#555;padding:4px 4px 2px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0 12px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi span{font-size:12px;color:var(--mut)}.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.good{color:var(--good)}.bad{color:var(--bad)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}th:first-child,td:first-child{text-align:left}
+th{color:var(--mut);font-weight:600;font-size:12px}
+.bar{height:8px;background:var(--chip);border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+.mut{color:var(--mut);font-size:12.5px}
+.log{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;font:11.5px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.log .e{border-bottom:1px solid var(--line);padding:6px 0}
+.log .m{color:var(--acc);font-weight:700}.log .t{color:var(--mut)}
+.log .r{color:var(--mut);white-space:pre-wrap;word-break:break-all;max-height:7.5em;overflow:hidden}
+.ok{color:var(--good);font-weight:700}
+.links a{color:var(--acc);margin-right:12px;font-weight:600}
+.hide{display:none}
+.verdict{margin:10px 0 4px;padding:10px 14px;border-radius:10px;font-weight:700;border:1.5px solid var(--good);color:var(--good)}
+.verdict.no{border-color:var(--bad);color:var(--bad)}
+</style>
+</head>
+<body>
+<header>
+  <h1>GA Studio</h1>
+  <span class="sub">도면 → 인식 → 요건 확인 → Gate 1 승인 → 결정론적 최적화 → 현황 대비 비교</span>
+  <span class="badge">NOT FOR CONSTRUCTION</span>
+  <span class="conn" id="conn">MCP 연결 중…</span>
+</header>
+<div class="wrap">
+<main>
+  <!-- 1. 도면 -->
+  <section class="card" id="c1">
+    <h2><span class="step">1</span>도면 넣기</h2>
+    <div class="drop" id="drop">도면 파일을 여기에 끌어 놓거나 클릭 — DXF · SVG · PDF(벡터) · PNG · IFC · CSV/XLSX
+      <input type="file" id="file" class="hide"></div>
+    <div class="row" style="margin-top:10px">
+      <label>단위(units)<select id="o_units"><option value="">파일 헤더</option><option>m</option><option>mm</option><option>cm</option><option>ft</option><option>in</option></select></label>
+      <label>축척 1:N (PDF)<input type="number" id="o_ratio" placeholder="예: 200"></label>
+      <label>px / m (PNG·SVG)<input type="number" id="o_ppm" placeholder="예: 20"></label>
+      <label>문 틈 메우기 px<input type="number" id="o_gap" placeholder="PNG"></label>
+      <span style="flex:1"></span>
+      <label>또는 예제<select id="ex"><option value="">— 예제 선택 —</option></select></label>
+      <button class="ghost" id="exbtn">예제 불러오기</button>
+    </div>
+    <div id="imp" class="hide">
+      <div class="chips" id="impchips"></div>
+      <div class="imgs" id="impimgs"></div>
+      <ul class="warns" id="impwarn"></ul>
+    </div>
+  </section>
+
+  <!-- 2. 프로젝트 / 질문 -->
+  <section class="card dim" id="c2">
+    <h2><span class="step">2</span>프로젝트 · 확인 질문</h2>
+    <div class="row">
+      <label>층고 [m]<input id="p_fh" placeholder="예: 6 또는 6,5,5" style="width:150px"></label>
+      <label>기기 유지보수 이격 [m]<input type="number" step="0.1" id="p_cl" placeholder="예: 1.0"></label>
+      <label>우선순위<select id="p_preset"><option value="space_first">공간을 작게 (기본)</option><option value="balanced">균형</option></select></label>
+      <button id="mkproj" disabled>프로젝트 만들기</button>
+      <button class="ghost hide" id="applyreq">예제 설계요건 적용</button>
+      <button class="ghost hide" id="applyans">답변 반영</button>
+      <label class="hide" id="reqlbl">설계요건 파일 (JSON 패치)<input type="file" id="reqfile" accept=".json,application/json"></label>
+    </div>
+    <div id="proj" class="hide">
+      <div class="chips" id="projchips"></div>
+      <ol class="qs" id="qs"></ol>
+    </div>
+  </section>
+
+  <!-- 3. Gate 1 -->
+  <section class="card dim" id="c3">
+    <h2><span class="step">3</span>Gate 1 — 결정론적 검증 · 사람 승인</h2>
+    <div class="row">
+      <button id="val" disabled>검증</button>
+      <label>승인자<input id="appr" placeholder="이름 / 직함" style="width:180px"></label>
+      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="ack">WARN 확인함</label>
+      <button id="frz" disabled>승인 · IR 동결</button>
+    </div>
+    <div id="gate" class="hide">
+      <div class="chips" id="gatechips"></div>
+      <ul class="errs" id="gateerr"></ul>
+      <ul class="warns" id="gatewarn"></ul>
+    </div>
+  </section>
+
+  <!-- 4. 최적화 -->
+  <section class="card dim" id="c4">
+    <h2><span class="step">4</span>최적화 · 현황 대비 비교</h2>
+    <div class="row">
+      <label>탐색량<select id="eff"><option value="quick">빠르게</option><option value="normal" selected>보통</option><option value="thorough">충분히</option></select></label>
+      <label>모드<select id="mode"><option value="sa">단일 목적 (SA)</option><option value="nsga">Pareto (NSGA-II)</option></select></label>
+      <label>seed<input type="number" id="seed" value="20260826"></label>
+      <button id="run" disabled>최적화 실행</button>
+    </div>
+    <div class="bar"><i id="bar"></i></div><div class="mut" id="runmsg"></div>
+    <div id="res" class="hide">
+      <div id="verdict" class="verdict"></div>
+      <div class="kpis" id="kpis"></div>
+      <table id="cmp"></table>
+      <div id="resimgs"></div>
+      <p class="links" id="links"></p>
+      <p class="mut" id="repro"></p>
+    </div>
+  </section>
+</main>
+<aside>
+  <section class="card log" id="log"><h2 style="font-family:inherit">MCP 호출 기록</h2>
+    <div class="mut" style="font-family:inherit">이 화면은 Claude·ChatGPT 가 쓰는 것과 같은 MCP 도구(<code>/mcp</code>)를 호출한다.</div>
+  </section>
+</aside>
+</div>
+<script>
+const BASE = "__BASE__";
+let sid = null, rid = 0;
+const S = {takeoff:null, project:null, example:null, run:null, questions:[]};
+const $ = id => document.getElementById(id);
+const fmt = (v,nd=0) => v==null ? "—" : Number(v).toLocaleString("ko-KR",{minimumFractionDigits:nd,maximumFractionDigits:nd});
+const esc = s => String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function logE(method, args, ms, res, err){
+  const d = document.createElement("div"); d.className="e";
+  const a = JSON.stringify(args||{}); const r = err ? ("ERROR "+err) : JSON.stringify(res);
+  d.innerHTML = `<span class="m">${esc(method)}</span> <span class="t">${ms} ms</span><div class="r">→ ${esc(a.slice(0,160))}\n← ${esc((r||"").slice(0,420))}</div>`;
+  $("log").appendChild(d); d.scrollIntoView({block:"nearest"});
+}
+async function rpc(method, params){
+  const body = {jsonrpc:"2.0", id:++rid, method, params};
+  const h = {"Content-Type":"application/json","Accept":"application/json, text/event-stream"};
+  if (sid) h["Mcp-Session-Id"] = sid;
+  const r = await fetch(BASE + "/mcp", {method:"POST", headers:h, body:JSON.stringify(body)});
+  if (r.headers.get("Mcp-Session-Id")) sid = r.headers.get("Mcp-Session-Id");
+  if (r.status === 202) return null;
+  return r.json();
+}
+async function tool(name, args){
+  const t0 = performance.now();
+  const j = await rpc("tools/call", {name, arguments: args||{}});
+  const ms = Math.round(performance.now()-t0);
+  const res = j.result || {};
+  if (j.error || res.isError){
+    const msg = j.error ? j.error.message : res.content[0].text;
+    logE(name, args, ms, null, msg); throw new Error(msg);
+  }
+  logE(name, args, ms, res.structuredContent);
+  return res.structuredContent;
+}
+function enable(card, on=true){ $(card).classList.toggle("dim", !on); }
+function alertErr(e){ alert(e.message || e); }
+
+// ---- 연결 ----
+(async () => {
+  const j = await rpc("initialize", {protocolVersion:"2025-06-18", capabilities:{}, clientInfo:{name:"ga-studio", version:"1"}});
+  await rpc("notifications/initialized", {});
+  const tl = await rpc("tools/list", {});
+  $("conn").innerHTML = `<b>●</b> ${esc(j.result.serverInfo.title)} ${esc(j.result.serverInfo.version)} · 도구 ${tl.result.tools.length}개 · MCP ${esc(j.result.protocolVersion)}`;
+  logE("initialize", {}, 0, j.result.serverInfo);
+  const ex = await tool("ga_list_examples");
+  for (const e of ex.examples){ const o=document.createElement("option"); o.value=e.name; o.textContent=e.title; $("ex").appendChild(o); }
+})().catch(e => { $("conn").textContent = "MCP 연결 실패: " + e.message; });
+
+// ---- 1. 업로드 / import ----
+const drop = $("drop");
+drop.onclick = () => $("file").click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("hover"); };
+drop.ondragleave = () => drop.classList.remove("hover");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("hover"); if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0]); };
+$("file").onchange = e => { if (e.target.files[0]) upload(e.target.files[0]); };
+
+function importOpts(){
+  const o = {};
+  if ($("o_units").value) o.units = $("o_units").value;
+  if ($("o_ratio").value) o.scale_ratio = +$("o_ratio").value;
+  if ($("o_ppm").value) o.px_per_m = +$("o_ppm").value;
+  if ($("o_gap").value) o.close_gaps_px = +$("o_gap").value;
+  return o;
+}
+async function upload(f){
+  try{
+    drop.textContent = `업로드 중: ${f.name}`;
+    const r = await fetch(BASE + "/upload", {method:"POST", headers:{"X-Filename":encodeURIComponent(f.name)}, body:f});
+    const st = await r.json(); if (!r.ok) throw new Error(st.error);
+    logE("POST /upload", {filename:f.name}, 0, st);
+    drop.textContent = `${f.name} — file_id ${st.file_id} (${st.format_guess})`;
+    S.example = null;
+    showImport(await tool("ga_import_drawing", {file_id: st.file_id, options: importOpts()}));
+  }catch(e){ drop.textContent = "실패: " + e.message; }
+}
+function showImport(r){
+  S.takeoff = r.takeoff_id;
+  $("imp").classList.remove("hide");
+  const k = r.stats.by_kind || {};
+  $("impchips").innerHTML = [
+    `형식 <b>${esc(r.format.toUpperCase())}</b>`, `인식 <b>${r.items_total}</b>개`,
+    ...Object.entries(k).map(([a,b])=>`${({equipment:"기기",room:"실",obstacle:"고정",void:"금지",opening:"해치·계단"})[a]||a} <b>${b}</b>`),
+    `층 <b>${r.stats.floors}</b>`, `축척: ${esc(r.scale_basis)}`
+  ].map(x=>`<span class="chip">${x}</span>`).join("");
+  $("impimgs").innerHTML = Object.entries(r.preview_svg).map(([fl,l]) =>
+    `<figure><img src="${l.url}" alt=""><figcaption>${fl} 인식 결과 — 파서가 읽은 그대로 (LLM 미개입)</figcaption></figure>`).join("");
+  $("impwarn").innerHTML = (r.warnings||[]).slice(0,8).map(w=>`<li>${esc(w)}</li>`).join("");
+  enable("c2"); $("mkproj").disabled = false;
+}
+$("exbtn").onclick = async () => {
+  const name = $("ex").value; if (!name) return;
+  try{
+    $("exbtn").disabled = true;
+    const r = await tool("ga_load_example", {name});
+    S.example = name;
+    drop.textContent = `예제: ${r.example.title}`;
+    showImport(r.import_result);
+    showProject(r.project);
+    $("applyreq").classList.toggle("hide", !r.requirements_file);
+  }catch(e){ alertErr(e); } finally { $("exbtn").disabled = false; }
+};
+
+// ---- 2. 프로젝트 ----
+function projOpts(){
+  const o = {preset: $("p_preset").value};
+  if ($("p_fh").value) o.floor_heights = $("p_fh").value.split(",").map(Number);
+  if ($("p_cl").value) o.default_clearance = +$("p_cl").value;
+  return o;
+}
+$("mkproj").onclick = async () => {
+  try{ showProject(await tool("ga_create_project", {takeoff_ids:[S.takeoff], options: projOpts()})); }
+  catch(e){ alertErr(e); }
+};
+function showProject(p){
+  S.project = p.project_id; S.questions = p.questions || [];
+  $("proj").classList.remove("hide");
+  const s = p.summary;
+  $("projchips").innerHTML = [
+    `프로젝트 <b>${esc(p.project_id)}</b>`, `블록 <b>${s.blocks}</b>`, `층 <b>${s.n_floors}</b>`,
+    `현재 공간 <b>${fmt(s.max_w,1)} × ${fmt(s.max_d,1)} m</b>`, `연결 <b>${s.links}</b>`, `이격요건 <b>${s.separations}</b>`,
+    `우선순위 <b>${s.preset==="space_first"?"공간":"균형"}</b>`
+  ].map(x=>`<span class="chip">${x}</span>`).join("");
+  $("qs").innerHTML = S.questions.map(q=>`<li>${esc(q.question)}<small>${esc(q.why)}</small></li>`).join("") || "<li>남은 질문 없음</li>";
+  $("applyans").classList.remove("hide"); $("reqlbl").classList.remove("hide");
+  enable("c3"); $("val").disabled = false;
+}
+$("applyans").onclick = async () => {
+  const patch = {set:{}, blocks:[], answered_questions:[]};
+  if ($("p_fh").value){ patch.set.floor_heights = $("p_fh").value.split(",").map(Number); patch.answered_questions.push("floor_heights"); }
+  if ($("p_cl").value){ patch.blocks.push({all:true, kind_filter:"equipment", clearance:+$("p_cl").value}); patch.answered_questions.push("clearance"); }
+  patch.set.preset = $("p_preset").value;
+  try{
+    const r = await tool("ga_update_ir", {project_id:S.project, patch, reason:"스튜디오 입력 (사용자 답변)"});
+    const g = await tool("ga_get_ir", {project_id:S.project, include_blocks:false});
+    showProject({project_id:S.project, summary:r.summary, questions:g.open_questions||[]});
+  }catch(e){ alertErr(e); }
+};
+$("reqfile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try{
+    const patch = JSON.parse(await f.text());
+    const r = await tool("ga_update_ir", {project_id:S.project, patch, reason:`설계요건 파일: ${f.name}`});
+    const g = await tool("ga_get_ir", {project_id:S.project, include_blocks:false});
+    showProject({project_id:S.project, summary:r.summary, questions:g.open_questions||[]});
+  }catch(err){ alertErr(err); }
+};
+$("applyreq").onclick = async () => {
+  try{
+    const r = await tool("ga_apply_example_requirements", {project_id:S.project, name:S.example});
+    const g = await tool("ga_get_ir", {project_id:S.project, include_blocks:false});
+    showProject({project_id:S.project, summary:r.summary, questions:g.open_questions||[]});
+  }catch(e){ alertErr(e); }
+};
+
+// ---- 3. Gate 1 ----
+$("val").onclick = async () => {
+  try{
+    const r = await tool("ga_validate", {project_id:S.project});
+    $("gate").classList.remove("hide");
+    $("gatechips").innerHTML = [
+      r.passed ? `<span class="ok">통과</span>` : `<span class="bad">불통과</span>`,
+      `ERROR <b>${r.errors.length}</b>`, `WARN <b>${r.warnings.length}</b>`, `IR <b>${r.ir_sha256.slice(0,12)}…</b>`
+    ].map(x=>`<span class="chip">${x}</span>`).join("");
+    $("gateerr").innerHTML = r.errors.map(w=>`<li>${esc(w)}</li>`).join("");
+    $("gatewarn").innerHTML = r.warnings.slice(0,10).map(w=>`<li>${esc(w)}</li>`).join("") + (r.warnings.length>10?`<li>… 외 ${r.warnings.length-10}건</li>`:"");
+    $("frz").disabled = !r.passed;
+  }catch(e){ alertErr(e); }
+};
+$("frz").onclick = async () => {
+  try{
+    const r = await tool("ga_freeze", {project_id:S.project, approved_by:$("appr").value, acknowledged_warnings:$("ack").checked});
+    $("gatechips").innerHTML += `<span class="chip"><span class="ok">동결</span> ${esc(r.approved_by)} · ${r.ir_sha256.slice(0,12)}…</span>`;
+    enable("c4"); $("run").disabled = false;
+  }catch(e){ alertErr(e); }
+};
+
+// ---- 4. 최적화 ----
+$("run").onclick = async () => {
+  $("run").disabled = true; $("res").classList.add("hide");
+  try{
+    let r = await tool("ga_optimize", {project_id:S.project, effort:$("eff").value, mode:$("mode").value, seed:+$("seed").value, wait_seconds:1});
+    while (r.status !== "done"){
+      if (r.status === "error") throw new Error(r.message);
+      $("bar").style.width = Math.round((r.progress||0)*100) + "%"; $("runmsg").textContent = r.message || "";
+      await new Promise(ok => setTimeout(ok, 700));
+      r = await tool("ga_run_status", {run_id:r.run_id});
+    }
+    $("bar").style.width = "100%"; $("runmsg").textContent = r.cached ? "같은 IR·seed 의 결과가 이미 있다 (결정론) — 재사용" : "완료";
+    showResult(r);
+  }catch(e){ $("runmsg").textContent = "실패: " + e.message; }
+  finally { $("run").disabled = false; }
+};
+function pct(v){ if (v==null) return "—"; const c = v>0.05?"good":(v<-0.05?"bad":""); return `<span class="${c}">${v>0?"−":"+"}${Math.abs(v).toFixed(1)}%</span>`; }
+function showResult(r){
+  S.run = r.run_id;
+  const s = r.summary, o = s.optimized, a = s.asis, c = s.comparison, b = s.naive_baseline;
+  $("res").classList.remove("hide");
+  const v = c && c.verdict ? c.verdict : (o.hard_violation_count ? "hard 위반이 남아 채택할 수 없다" : "");
+  $("verdict").textContent = v ? "판정: " + v : "";
+  $("verdict").className = "verdict" + ((c && (c.asis_better || !c.claimable)) || o.hard_violation_count ? " no" : "");
+  $("verdict").style.display = v ? "" : "none";
+  $("kpis").innerHTML = [
+    a ? `<div class="kpi"><span>건축면적 · 현황 → 최적화</span><b>${fmt(a.footprint_m2)} → ${fmt(o.footprint_m2)} m²</b></div>` :
+        `<div class="kpi"><span>건축면적 (최적화)</span><b>${fmt(o.footprint_m2)} m²</b></div>`,
+    a ? `<div class="kpi"><span>현황 대비 면적</span><b>${pct(c.footprint_reduction_pct)}</b></div>` : "",
+    `<div class="kpi"><span>외피 W × D</span><b>${fmt(o.width_m,1)} × ${fmt(o.depth_m,1)} m</b></div>`,
+    `<div class="kpi"><span>hard 제약 위반</span><b class="${o.hard_violation_count?'bad':'good'}">${o.hard_violation_count}건${a?` <small class="mut">(현황 ${a.hard_violation_count})</small>`:""}</b></div>`
+  ].join("");
+  const rows = [["외피 폭 W [m]","width_m",1],["외피 깊이 D [m]","depth_m",1],["건축면적 [m²]","footprint_m2",0],["건물체적 [m³]","volume_m3",0],["연결비용","link_cost",0],["hard 위반","hard_violation_count",0]];
+  $("cmp").innerHTML = `<tr><th>지표</th>${a?"<th>현황(도면)</th>":""}<th>나이브 기준안</th><th>최적화</th>${a?"<th>현황 대비</th>":""}</tr>` +
+    rows.map(([l,k,nd]) => `<tr><td>${l}</td>${a?`<td>${fmt(a[k],nd)}</td>`:""}<td>${fmt(b[k],nd)}</td><td><b>${fmt(o[k],nd)}</b></td>${a?`<td>${(a[k]&&k!=="hard_violation_count")?pct((a[k]-o[k])/a[k]*100):""}</td>`:""}</tr>`).join("");
+  let h = "";
+  for (let f=1; f<=s.floors; f++){
+    const L = r.files[`GA_asis_floor${f}.svg`], R = r.files[`GA_optimized_floor${f}.svg`];
+    h += `<div class="imgs">` + (L?`<figure><img src="${L.url}"><figcaption>${f}층 — 현황(도면)</figcaption></figure>`:"") +
+         (R?`<figure><img src="${R.url}"><figcaption>${f}층 — 최적화 (솔버 출력)</figcaption></figure>`:"") + `</div>`;
+  }
+  $("resimgs").innerHTML = h;
+  $("links").innerHTML = [["보고서 (HTML)", r.files["report.html"]], ["DXF (CAD)", r.files["GA_optimized.dxf"]], ["결과 JSON", r.files["result.json"]]]
+    .filter(x=>x[1]).map(([t,l])=>`<a href="${l.url}" target="_blank">${t}</a>`).join("");
+  $("repro").textContent = `재현성 — IR ${r.reproducibility.ir_sha256.slice(0,12)}… + seed ${r.reproducibility.seed} → 결과 ${r.reproducibility.result_sha256.slice(0,12)}… · ${s.wall_time_s}s` + (r.warning?(" · "+r.warning):"");
+}
+</script>
+</body>
+</html>

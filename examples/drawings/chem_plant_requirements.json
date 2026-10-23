@@ -1,0 +1,435 @@
+{
+ "_note": "석유화학 공정 플랜트 설계요건 (가정값). 이격 거리는 공개 문헌의 전형적 범위를 단순화한 가정이다.",
+ "set": {
+  "floor_heights": [
+   50.0
+  ]
+ },
+ "blocks": [
+  {
+   "id": "F-101",
+   "name": "가열로 (Fired Heater)",
+   "h": 25,
+   "weight": 300,
+   "zone": "FIRED",
+   "clearance": 3.0
+  },
+  {
+   "id": "R-101",
+   "name": "반응기",
+   "h": 20,
+   "weight": 250,
+   "zone": "PROCESS",
+   "clearance": 2.5
+  },
+  {
+   "id": "R-102",
+   "name": "반응기 2",
+   "h": 20,
+   "weight": 250,
+   "zone": "PROCESS",
+   "clearance": 2.5
+  },
+  {
+   "id": "C-101",
+   "name": "증류탑 1",
+   "h": 45,
+   "weight": 180,
+   "zone": "PROCESS",
+   "clearance": 2.0
+  },
+  {
+   "id": "C-102",
+   "name": "증류탑 2",
+   "h": 40,
+   "weight": 160,
+   "zone": "PROCESS",
+   "clearance": 2.0
+  },
+  {
+   "id": "E-101",
+   "name": "열교환기 뱅크",
+   "h": 4,
+   "weight": 60,
+   "zone": "PROCESS",
+   "clearance": 1.5
+  },
+  {
+   "id": "E-102",
+   "name": "공랭식 냉각기",
+   "h": 10,
+   "weight": 80,
+   "zone": "PROCESS",
+   "clearance": 1.5
+  },
+  {
+   "id": "K-101",
+   "name": "재순환 압축기",
+   "h": 6,
+   "weight": 120,
+   "zone": "COMP",
+   "clearance": 3.0
+  },
+  {
+   "id": "K-102",
+   "name": "냉동 압축기",
+   "h": 6,
+   "weight": 120,
+   "zone": "COMP",
+   "clearance": 3.0
+  },
+  {
+   "id": "V-101",
+   "name": "분리 드럼",
+   "h": 8,
+   "weight": 40,
+   "zone": "PROCESS",
+   "clearance": 1.5
+  },
+  {
+   "id": "P-101",
+   "name": "공급 펌프군",
+   "h": 2,
+   "weight": 20,
+   "zone": "PROCESS",
+   "clearance": 1.2
+  },
+  {
+   "id": "P-102",
+   "name": "환류 펌프군",
+   "h": 2,
+   "weight": 20,
+   "zone": "PROCESS",
+   "clearance": 1.2
+  },
+  {
+   "id": "T-101",
+   "name": "원료 저장탱크",
+   "h": 15,
+   "weight": 80,
+   "zone": "STORAGE",
+   "clearance": 3.0,
+   "need_exterior": true
+  },
+  {
+   "id": "T-102",
+   "name": "제품 저장탱크",
+   "h": 15,
+   "weight": 80,
+   "zone": "STORAGE",
+   "clearance": 3.0,
+   "need_exterior": true
+  },
+  {
+   "id": "T-103",
+   "name": "중간 탱크",
+   "h": 12,
+   "weight": 50,
+   "zone": "STORAGE",
+   "clearance": 3.0
+  },
+  {
+   "id": "CR-1",
+   "name": "중앙 제어실",
+   "h": 6,
+   "weight": 50,
+   "zone": "OCCUPIED",
+   "clearance": 2.0,
+   "need_exterior": true
+  },
+  {
+   "id": "SS-1",
+   "name": "변전실",
+   "h": 6,
+   "weight": 70,
+   "zone": "ELEC",
+   "clearance": 2.0
+  },
+  {
+   "id": "CT-1",
+   "name": "냉각탑",
+   "h": 12,
+   "weight": 90,
+   "zone": "UTIL",
+   "clearance": 2.0
+  },
+  {
+   "id": "UT-1",
+   "name": "유틸리티 (질소·공기)",
+   "h": 5,
+   "weight": 40,
+   "zone": "UTIL",
+   "clearance": 1.5
+  },
+  {
+   "id": "LD-1",
+   "name": "정비 적치장 (Laydown)",
+   "h": 1,
+   "weight": 0,
+   "zone": "OPEN",
+   "clearance": 0.0,
+   "need_exterior": true
+  },
+  {
+   "id": "FL-1",
+   "name": "플레어 녹아웃 드럼",
+   "h": 8,
+   "weight": 30,
+   "zone": "FLARE",
+   "clearance": 3.0
+  }
+ ],
+ "remove_links": "inferred",
+ "add_links": [
+  {
+   "a": "T-101",
+   "b": "P-101",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "P-101",
+   "b": "E-101",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "E-101",
+   "b": "F-101",
+   "cost": 4,
+   "kind": "pipe"
+  },
+  {
+   "a": "F-101",
+   "b": "R-101",
+   "cost": 5,
+   "kind": "pipe"
+  },
+  {
+   "a": "R-101",
+   "b": "R-102",
+   "cost": 4,
+   "kind": "pipe"
+  },
+  {
+   "a": "R-102",
+   "b": "V-101",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "V-101",
+   "b": "K-101",
+   "cost": 4,
+   "kind": "pipe"
+  },
+  {
+   "a": "K-101",
+   "b": "R-101",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "V-101",
+   "b": "C-101",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "C-101",
+   "b": "C-102",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "C-102",
+   "b": "P-102",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "P-102",
+   "b": "C-102",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "C-102",
+   "b": "E-102",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "E-102",
+   "b": "T-102",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "C-101",
+   "b": "T-103",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "K-102",
+   "b": "E-102",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "CT-1",
+   "b": "E-101",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "CT-1",
+   "b": "E-102",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "SS-1",
+   "b": "K-101",
+   "cost": 1.5,
+   "kind": "pipe"
+  },
+  {
+   "a": "SS-1",
+   "b": "K-102",
+   "cost": 1.5,
+   "kind": "pipe"
+  },
+  {
+   "a": "UT-1",
+   "b": "R-101",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "V-101",
+   "b": "FL-1",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "C-101",
+   "b": "FL-1",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "CR-1",
+   "b": "SS-1",
+   "cost": 1,
+   "kind": "pipe"
+  }
+ ],
+ "add_separations": [
+  {
+   "a": "F-101",
+   "b": "K-101",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "F-101",
+   "b": "K-102",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "F-101",
+   "b": "T-101",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "F-101",
+   "b": "T-102",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "F-101",
+   "b": "T-103",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "CR-1",
+   "b": "R-101",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "CR-1",
+   "b": "R-102",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "CR-1",
+   "b": "K-101",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "CR-1",
+   "b": "K-102",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "CR-1",
+   "b": "F-101",
+   "min_dist": 15,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "FL-1",
+   "b": "CR-1",
+   "min_dist": 18,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "T-101",
+   "b": "K-101",
+   "min_dist": 10,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "T-102",
+   "b": "K-102",
+   "min_dist": 10,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  },
+  {
+   "a": "SS-1",
+   "b": "K-101",
+   "min_dist": 10,
+   "hard": true,
+   "basis": "(가정값 — 실제는 CCPS GCPS / 보험사 이격표 / 정량위험평가 원문 대조)"
+  }
+ ],
+ "answered_questions": [
+  "floor_heights",
+  "clearance",
+  "links",
+  "zones_separations"
+ ]
+}

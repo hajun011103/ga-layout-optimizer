@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "smr-ga": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/mcp_server.py"],
+      "env": {}
+    }
+  }
+}

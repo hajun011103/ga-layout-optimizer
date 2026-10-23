@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.frozen.json
+*.frozen.json.sha256
+tests/_tmp_*
+/out/
+demo/out/
+.venv/
+NOTES.local.md

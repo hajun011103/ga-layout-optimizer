@@ -1,0 +1,322 @@
+{
+ "_note": "FPSO 상부 설계요건 (가정값). 무게중심 편심을 강하게 본다 (Bae 2014: CoG 1 m² 이내 관행).",
+ "set": {
+  "floor_heights": [
+   14.0,
+   14.0
+  ],
+  "weights": {
+   "ecc": 2000.0
+  }
+ },
+ "blocks": [
+  {
+   "id": "M01",
+   "name": "1단 분리 모듈",
+   "h": 12,
+   "weight": 1800,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "M02",
+   "name": "2단 분리·탈수",
+   "h": 12,
+   "weight": 1400,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "M03",
+   "name": "가스 압축",
+   "h": 14,
+   "weight": 2200,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "M04",
+   "name": "가스 처리 (탈습)",
+   "h": 12,
+   "weight": 1300,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "M05",
+   "name": "수 주입",
+   "h": 10,
+   "weight": 1200,
+   "zone": "SAFE",
+   "clearance": 1.0
+  },
+  {
+   "id": "M06",
+   "name": "생산수 처리",
+   "h": 10,
+   "weight": 900,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "M07",
+   "name": "발전 (가스터빈)",
+   "h": 12,
+   "weight": 1600,
+   "zone": "SAFE",
+   "clearance": 1.0
+  },
+  {
+   "id": "M08",
+   "name": "유틸리티·공기",
+   "h": 8,
+   "weight": 600,
+   "zone": "SAFE",
+   "clearance": 1.0
+  },
+  {
+   "id": "M09",
+   "name": "화학약품 주입",
+   "h": 6,
+   "weight": 300,
+   "zone": "HAZ",
+   "clearance": 1.0
+  },
+  {
+   "id": "EH-1",
+   "name": "전기실 (E-House)",
+   "h": 8,
+   "weight": 500,
+   "zone": "SAFE",
+   "clearance": 1.0
+  },
+  {
+   "id": "LQ",
+   "name": "거주구역 (Living Quarters)",
+   "h": 18,
+   "weight": 2500,
+   "zone": "LQ",
+   "clearance": 1.0,
+   "need_exterior": true
+  },
+  {
+   "id": "LB-1",
+   "name": "구명정 스테이션",
+   "h": 4,
+   "weight": 60,
+   "zone": "LQ",
+   "clearance": 0.5,
+   "need_exterior": true
+  },
+  {
+   "id": "BW-1",
+   "name": "방폭벽 (Blast Wall)",
+   "h": 12,
+   "weight": 400,
+   "zone": "SAFE",
+   "clearance": 0.0
+  },
+  {
+   "id": "LD-1",
+   "name": "갑판 적치장",
+   "h": 1,
+   "weight": 0,
+   "zone": "SAFE",
+   "clearance": 0.0
+  }
+ ],
+ "remove_links": "inferred",
+ "add_links": [
+  {
+   "a": "M01",
+   "b": "M02",
+   "cost": 5,
+   "kind": "pipe"
+  },
+  {
+   "a": "M02",
+   "b": "M03",
+   "cost": 4,
+   "kind": "pipe"
+  },
+  {
+   "a": "M03",
+   "b": "M04",
+   "cost": 4,
+   "kind": "pipe"
+  },
+  {
+   "a": "M02",
+   "b": "M06",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "M06",
+   "b": "M05",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "M04",
+   "b": "M07",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "M07",
+   "b": "EH-1",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "EH-1",
+   "b": "M03",
+   "cost": 2,
+   "kind": "pipe"
+  },
+  {
+   "a": "M08",
+   "b": "M01",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "M09",
+   "b": "M01",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "M09",
+   "b": "M06",
+   "cost": 1,
+   "kind": "pipe"
+  },
+  {
+   "a": "LQ",
+   "b": "LB-1",
+   "cost": 3,
+   "kind": "pipe"
+  },
+  {
+   "a": "LQ",
+   "b": "EH-1",
+   "cost": 1,
+   "kind": "pipe"
+  }
+ ],
+ "add_separations": [
+  {
+   "a": "LQ",
+   "b": "M01",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LQ",
+   "b": "M02",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LQ",
+   "b": "M03",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LQ",
+   "b": "M04",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LQ",
+   "b": "M06",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LQ",
+   "b": "M09",
+   "min_dist": 12.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M01",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M02",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M03",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M04",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M06",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "LB-1",
+   "b": "M09",
+   "min_dist": 8.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "EH-1",
+   "b": "M01",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "EH-1",
+   "b": "M02",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  },
+  {
+   "a": "EH-1",
+   "b": "M03",
+   "min_dist": 6.0,
+   "hard": true,
+   "basis": "(가정값 — 실제는 화재·폭발 위험해석(FERA) / API RP 14J / DNV 원문 대조)"
+  }
+ ],
+ "answered_questions": [
+  "floor_heights",
+  "clearance",
+  "links",
+  "zones_separations"
+ ]
+}

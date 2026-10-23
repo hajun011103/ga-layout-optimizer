@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "smr-ga",
+  "displayName": "SMR GA Layout Optimizer",
+  "version": "0.3.0",
+  "description": "혁신형 SMR General Arrangement 배치 최적화. 자연어 요구사항을 Design Intent IR 로 정형화하고(Gate 1 사람 승인), 결정론적 솔버가 배치를 계산해 SVG/DXF 도면을 만든다. LLM 은 좌표를 한 개도 생성하지 않는다.",
+  "author": {
+    "name": "ga-layout-optimizer"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "nuclear",
+    "smr",
+    "general-arrangement",
+    "layout-optimization",
+    "sequence-pair",
+    "nsga-ii",
+    "offline"
+  ],
+  "metadata": {
+    "engine": "engine/ (Python 3.8+, 표준 라이브러리만)",
+    "network": "외부 네트워크 불필요 — 폐쇄망 설치 가능",
+    "disclaimer": "NOT FOR CONSTRUCTION — 개념검토용"
+  }
+}

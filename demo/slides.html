@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GA 시연 슬라이드</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1b1b19;--mut:#6b6a64;--line:#e3e1da;--acc:#1f4fd1;--good:#0f766e;--bad:#be123c;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:20px/1.5 "Malgun Gothic","Noto Sans KR",system-ui,sans-serif;height:100vh;overflow:hidden}
+section{display:none;height:100vh;padding:56px 72px;flex-direction:column;justify-content:center}
+section.on{display:flex}
+h1{font-size:46px;margin:0 0 10px;letter-spacing:-1px}
+h2{font-size:32px;margin:0 0 22px;letter-spacing:-.5px}
+.sub{color:var(--mut);font-size:21px}
+.badge{display:inline-block;border:2px solid var(--bad);color:var(--bad);font-weight:700;font-size:14px;padding:3px 10px;border-radius:5px;margin-top:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.card b{display:block;font-size:22px;margin-bottom:8px}
+.card .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;font-size:16px;margin-bottom:10px}
+.card p{margin:0;font-size:17px;color:#3a3935}
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 26px;font-size:17px}
+.flow span{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.flow i{color:var(--mut);font-style:normal}
+.flow .g{border-color:var(--acc);color:var(--acc);font-weight:700}
+table{border-collapse:collapse;width:100%;background:var(--card);border-radius:12px;overflow:hidden;font-size:18px}
+th,td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mut);font-size:15px}
+.good{color:var(--good);font-weight:700}.bad{color:var(--bad);font-weight:700}
+pre{background:#16161a;color:#e6e6e6;border-radius:12px;padding:16px 18px;font:14px/1.45 Consolas,Menlo,monospace;margin:0;white-space:pre-wrap}
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:26px}
+ol{margin:0;padding-left:24px}li{margin:8px 0;font-size:18px}
+.note{color:var(--mut);font-size:15px;margin-top:16px}
+</style>
+</head>
+<body>
+
+<section id="title">
+  <div class="sub">SMR General Arrangement 배치 최적화</div>
+  <h1>도면을 넣으면, 그 공간을 더 작게</h1>
+  <div class="sub">Claude · ChatGPT · Codex 용 MCP 서버 + Claude Code 플러그인 · 엔진은 Python 표준 라이브러리만</div>
+  <div><span class="badge">NOT FOR CONSTRUCTION — 개념검토용 · 예제는 전부 가정값</span></div>
+</section>
+
+<section id="goals">
+  <h2>세 가지 목표 → 이렇게 풀었다</h2>
+  <div class="grid3">
+    <div class="card"><div class="n">1</div><b>도면을 넣으면 더 작게</b>
+      <p>DXF · SVG · 벡터 PDF · PNG · IFC · CSV/XLSX 를 결정론적 파서가 읽는다. 현재 외곽을 넘지 않고, 고정물은 그대로, '공간 우선'으로 최적화. 현황 도면을 같은 목적함수로 채점해 비교한다.</p></div>
+    <div class="card"><div class="n">2</div><b>원전처럼 복잡한 구조</b>
+      <p>SMR 보조건물 3개 층 · 44기기. App.R 화재분리, 해치 화재구역 병합, 다층 관통, 터빈 미사일, 중요구역, 하중경로, 중력구동 표고, 크레인.</p></div>
+    <div class="card"><div class="n">3</div><b>원전 도면이 없을 때 비교군</b>
+      <p>석유화학 공정 플랜트(화재·폭발 이격), FPSO 상부(위험구역·무게중심), 병원 수술부(청결/오염 분리). 공개 원전 평면도는 비공개 처리되어 있다.</p></div>
+  </div>
+  <div class="flow" style="margin-top:30px">
+    <span>도면</span><i>→</i><span class="g">결정론적 파서</span><i>→</i><span>인식 확인 (사람)</span><i>→</i>
+    <span>질문 · 요건</span><i>→</i><span class="g">Gate 1 검증</span><i>→</i><span>승인 · 동결</span><i>→</i>
+    <span class="g">결정론적 솔버</span><i>→</i><span>현황 vs 최적화</span>
+  </div>
+  <div class="note">LLM 은 좌표를 한 개도 만들지 않는다 — 좌표는 파서와 솔버만. LLM 은 묻고, 호출하고, 설명한다.</div>
+</section>
+
+<section id="connect">
+  <h2>ChatGPT 웹 · Claude.ai 웹에 붙이기 (원격 MCP)</h2>
+  <div class="two">
+    <div>
+      <ol>
+        <li>이 컴퓨터에서 서버 실행<br><code style="font-size:15px">python3 server/mcp_server.py --http --token &lt;TOKEN&gt;</code></li>
+        <li>HTTPS 터널 <code style="font-size:15px">cloudflared tunnel --url http://127.0.0.1:8765</code></li>
+        <li>ChatGPT: 설정 → 커넥터(개발자 모드) → 만들기<br>Claude.ai: 설정 → 커넥터 → 사용자 지정 추가</li>
+        <li>URL: <code style="font-size:15px">https://&lt;터널&gt;/t/&lt;TOKEN&gt;/mcp</code></li>
+        <li>도면은 스튜디오 업로드 페이지로 → <code>file_id</code> 를 대화에</li>
+      </ol>
+      <div class="note">★ 원격 연결 = 도면과 결과가 해당 LLM 서비스로 전달된다. 실제 원전 설계값 금지.<br>Claude Code · Desktop · Codex CLI 는 로컬 stdio 로 같은 도구를 쓴다.</div>
+    </div>
+    <div>
+      <div class="sub" style="font-size:15px;margin-bottom:8px">지금 이 컴퓨터의 HTTP MCP 엔드포인트에 실제로 물어본 결과 (tools/list)</div>
+      <pre id="live">연결 중…</pre>
+    </div>
+  </div>
+</section>
+
+<section id="summary">
+  <h2>결과 요약 — 같은 IR · 같은 목적함수로 현황과 비교</h2>
+  <table>
+    <tr><th>사례</th><th>입력 형식</th><th>현황 hard 위반 → 최적화</th><th>건축면적</th><th>판정</th></tr>
+    <tr><td>원전 SMR 보조건물 (3층·44기기)</td><td>DXF</td><td>15 → <span class="good">0</span></td><td>7,569 → 5,390 m² <span class="good">−28.8%</span></td><td>설계 검토 후보</td></tr>
+    <tr><td>석유화학 공정 플랜트</td><td>벡터 PDF 1:500</td><td>11 → <span class="good">0</span></td><td>19,764 → 17,980 m² <span class="good">−9.0%</span></td><td>설계 검토 후보</td></tr>
+    <tr><td>FPSO 상부 (2개 데크)</td><td>SVG</td><td>4 → <span class="good">0</span></td><td>6,528 → 3,724 m² <span class="good">−43.0%</span></td><td>설계 검토 후보</td></tr>
+    <tr><td>병원 수술부 (꽉 찬 평면)</td><td>PNG 래스터</td><td>2 → <span class="bad">1</span></td><td>—</td><td class="bad">현황 유지 / 채택 불가</td></tr>
+  </table>
+  <div class="note">탐색량 normal, seed 20260826. 현황 도면은 관행 배치를 규칙으로 만든 <b>합성 도면</b>이고 요건은 가정값이다 — 이 개선율을 성과로 쓰지 말 것 (실제 기대치 −10~15%).
+  병원 사례처럼 줄일 여지가 없으면 솔버는 개선을 지어내지 않는다. 테스트 140개 통과 · 같은 IR + seed → 같은 결과 해시.</div>
+</section>
+
+<script>
+function show(id){ document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id)); if (id === "connect") live(); }
+window.addEventListener("hashchange", () => show(location.hash.slice(1) || "title"));
+show(location.hash.slice(1) || "title");
+async function live(){
+  try{
+    const post = b => fetch("http://127.0.0.1:8765/mcp", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(b)}).then(r=>r.json());
+    const init = await post({jsonrpc:"2.0", id:1, method:"initialize", params:{protocolVersion:"2025-06-18", capabilities:{}, clientInfo:{name:"slide",version:"1"}}});
+    const tl = await post({jsonrpc:"2.0", id:2, method:"tools/list"});
+    document.getElementById("live").textContent =
+      `POST /mcp  initialize → ${init.result.serverInfo.title} ${init.result.serverInfo.version} (MCP ${init.result.protocolVersion})\n` +
+      `POST /mcp  tools/list → ${tl.result.tools.length}개\n\n` +
+      tl.result.tools.map(t => (t.annotations.readOnlyHint ? "  읽기  " : "  쓰기  ") + t.name).join("\n");
+  }catch(e){ document.getElementById("live").textContent = "서버에 연결할 수 없다: " + e; }
+}
+</script>
+</body>
+</html>

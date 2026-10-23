@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 1280 1140" width="128mm" height="114mm" data-m-per-unit="0.1">
+<title>FPSO TOPSIDE (SYNTHETIC, ASSUMED) — 1 unit = 0.1 m</title>
+<g id="LEVEL_1" inkscape:label="LEVEL_1">
+<g id="BOUNDARY_1"><rect x="0" y="0" width="1280" height="510" fill="none" stroke="#000" stroke-width="4"/></g>
+<g id="EQUIP_1">
+<rect x="150" y="320" width="200" height="160" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="158" y="400" font-size="18">M01</text>
+<text x="158" y="422" font-size="14">1단 분리 모듈</text>
+<rect x="400" y="320" width="180" height="140" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="408" y="390" font-size="18">M02</text>
+<text x="408" y="412" font-size="14">2단 분리·탈수</text>
+<rect x="630" y="320" width="220" height="160" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="638" y="400" font-size="18">M03</text>
+<text x="638" y="422" font-size="14">가스 압축</text>
+<rect x="150" y="90" width="160" height="120" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="158" y="150" font-size="18">M05</text>
+<text x="158" y="172" font-size="14">수 주입</text>
+<rect x="580" y="50" width="200" height="160" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="588" y="130" font-size="18">LQ</text>
+<text x="588" y="152" font-size="14">거주구역 (Living Quarters)</text>
+<rect x="825" y="165" width="80" height="50" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="833" y="190" font-size="18">LB-1</text>
+<text x="833" y="212" font-size="14">구명정 스테이션</text>
+<rect x="940" y="200" width="300" height="20" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="948" y="210" font-size="18">BW-1</text>
+<text x="948" y="232" font-size="14">방폭벽 (Blast Wall)</text>
+</g>
+<g id="FIXED_1">
+<rect x="0" y="250" width="120" height="120" fill="#374151" stroke="#000" stroke-width="2"/>
+<text x="5" y="310" font-size="16" fill="#fff">TURRET</text>
+<rect x="500" y="130" width="40" height="40" fill="#374151" stroke="#000" stroke-width="2"/>
+<text x="505" y="150" font-size="16" fill="#fff">CRANE-P</text>
+</g></g>
+<g id="LEVEL_2" inkscape:label="LEVEL_2">
+<g id="BOUNDARY_2"><rect x="0" y="630" width="1280" height="510" fill="none" stroke="#000" stroke-width="4"/></g>
+<g id="EQUIP_2">
+<rect x="150" y="970" width="160" height="140" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="158" y="1040" font-size="18">M04</text>
+<text x="158" y="1062" font-size="14">가스 처리 (탈습)</text>
+<rect x="360" y="970" width="160" height="120" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="368" y="1030" font-size="18">M06</text>
+<text x="368" y="1052" font-size="14">생산수 처리</text>
+<rect x="570" y="970" width="200" height="140" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="578" y="1040" font-size="18">M07</text>
+<text x="578" y="1062" font-size="14">발전 (가스터빈)</text>
+<rect x="1020" y="970" width="140" height="100" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="1028" y="1020" font-size="18">M08</text>
+<text x="1028" y="1042" font-size="14">유틸리티·공기</text>
+<rect x="150" y="780" width="100" height="80" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="158" y="820" font-size="18">M09</text>
+<text x="158" y="842" font-size="14">화학약품 주입</text>
+<rect x="300" y="760" width="140" height="100" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="308" y="810" font-size="18">EH-1</text>
+<text x="308" y="832" font-size="14">전기실 (E-House)</text>
+<rect x="480" y="770" width="160" height="100" fill="#dbeafe" stroke="#1e3a8a" stroke-width="2"/>
+<text x="488" y="820" font-size="18">LD-1</text>
+<text x="488" y="842" font-size="14">갑판 적치장</text>
+</g>
+<g id="FIXED_2">
+<rect x="920" y="1060" width="60" height="60" fill="#374151" stroke="#000" stroke-width="2"/>
+<text x="925" y="1090" font-size="16" fill="#fff">FLARE-B</text>
+<rect x="500" y="1100" width="40" height="40" fill="#374151" stroke="#000" stroke-width="2"/>
+<text x="505" y="1120" font-size="16" fill="#fff">CRANE-S</text>
+</g></g>
+</svg>

@@ -1,0 +1,191 @@
+{
+  "_schema": "smr-ga-ir/1.0",
+  "project": "MINIMAL LEARNING CASE — 5블록 (가정 치수, 실제 설계값 아님)",
+  "_note": "스킬/커맨드 학습용 최소 예제. 모든 치수·이격은 가정값이며 설계 근거로 쓸 수 없다. NOT FOR CONSTRUCTION. MS↔MCR 이격을 채우는 SHIELD 블록이 들어 있는 이유는 README 「한계」 를 볼 것.",
+  "n_floors": 2,
+  "floor_heights": [
+    7.0,
+    10.0
+  ],
+  "max_w": 45.0,
+  "max_d": 35.0,
+  "aspect_max": 1.8,
+  "grid_m": 6.096,
+  "weights": {
+    "volume": 1.0,
+    "link": 1.6,
+    "zone": 40.0,
+    "sep": 30000.0,
+    "sep_soft": 2000.0,
+    "exterior": 30000.0,
+    "crane": 30000.0,
+    "aspect": 4000.0,
+    "ecc": 120.0,
+    "elev": 30000.0,
+    "envelope": 100000.0,
+    "fixed": 30000.0,
+    "constraint.FIRE-20FT": 30000.0,
+    "constraint.HELB-DIST": 30000.0,
+    "constraint.TALL-EQUIP": 30000.0
+  },
+  "blocks": [
+    {
+      "id": "MCR",
+      "name": "주제어실",
+      "w": 12.0,
+      "d": 8.0,
+      "h": 4.5,
+      "clearance": 1.5,
+      "zone": "CTRL",
+      "fire_zone": "FZ-CTRL",
+      "vital_area": "VA-1",
+      "weight": 70,
+      "floor": 0,
+      "rotatable": false
+    },
+    {
+      "id": "MS",
+      "name": "주증기배관실",
+      "w": 10.0,
+      "d": 4.0,
+      "h": 6.0,
+      "clearance": 1.2,
+      "zone": "BOP",
+      "fire_zone": "FZ-MS",
+      "weight": 40,
+      "floor": 0
+    },
+    {
+      "id": "SHIELD",
+      "name": "차폐벽 겸 통로",
+      "w": 12.5,
+      "d": 8.0,
+      "h": 6.0,
+      "clearance": 0.0,
+      "zone": "NR",
+      "fire_zone": "FZ-MS",
+      "weight": 250,
+      "floor": 0,
+      "rotatable": false,
+      "_why": "MS ↔ MCR 사이의 12 m 이격은 '빈 공간' 이 아니라 차폐벽/통로다. Sequence-Pair 패킹은 빈 공간을 만들지 않으므로, 요구 이격을 채우는 실체를 IR 에 명시해야 한다. README 「한계」 3 참조."
+    },
+    {
+      "id": "SIP",
+      "name": "안전주입펌프",
+      "w": 5.0,
+      "d": 3.0,
+      "h": 3.5,
+      "clearance": 1.5,
+      "zone": "R2",
+      "weight": 22,
+      "count": 2,
+      "floor": 0,
+      "vital_area": "VA-1",
+      "instances": [
+        {
+          "train": "TrainA",
+          "fire_zone": "FZ-A",
+          "success_path": "SP-A"
+        },
+        {
+          "train": "TrainB",
+          "fire_zone": "FZ-B",
+          "success_path": "SP-B"
+        }
+      ]
+    },
+    {
+      "id": "RWST",
+      "name": "재장전수저장탱크",
+      "w": 10.0,
+      "d": 10.0,
+      "h": 9.0,
+      "clearance": 1.5,
+      "zone": "R2",
+      "fire_zone": "FZ-TANK",
+      "weight": 900,
+      "floor": 1,
+      "rotatable": false
+    }
+  ],
+  "links": [
+    {
+      "a": "RWST",
+      "b": "SIP",
+      "cost": 9.0,
+      "kind": "pipe"
+    },
+    {
+      "a": "MCR",
+      "b": "SIP",
+      "cost": 6.0,
+      "kind": "cable"
+    }
+  ],
+  "separations": [
+    {
+      "a": "SIP-1",
+      "b": "SIP-2",
+      "min_dist": 8.0,
+      "hard": true,
+      "basis": "10 CFR 50 App.R III.G.2 — 중복 트레인 분리 (가정값: 실제 값은 화재해석에서 온다)"
+    }
+  ],
+  "elevations": [
+    {
+      "above": "RWST",
+      "below": "SIP-1",
+      "min_dz": 6.0,
+      "basis": "SMR 피동안전계통 중력 수두 — 주입지점 대비 최소 표고차 (가정값)"
+    },
+    {
+      "above": "RWST",
+      "below": "SIP-2",
+      "min_dz": 6.0,
+      "basis": "SMR 피동안전계통 중력 수두 — 주입지점 대비 최소 표고차 (가정값)"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "FIRE-20FT",
+      "_why": "고온정지 성공경로 A/B 계열 분리",
+      "params": {
+        "groups": [
+          [
+            "success_path:SP-A"
+          ],
+          [
+            "success_path:SP-B"
+          ]
+        ],
+        "min_horizontal_m": 6.096,
+        "combustible_free": true,
+        "detection_and_suppression": true
+      }
+    },
+    {
+      "id": "HELB-DIST",
+      "_why": "BTP 3-3 — 주증기 배관을 주제어실 주변에 배선하지 말 것",
+      "params": {
+        "sources": [
+          {
+            "block": "MS",
+            "jet_azimuth_deg": 0.0
+          }
+        ],
+        "targets": [
+          "MCR"
+        ],
+        "min_dist_m": 12.0,
+        "_min_dist_note": "★ 규제 고정 수치가 아니다. 플랜트별 HELB 해석 결과로 반드시 교체할 것. 12 m 는 시연용 가정값이다.",
+        "jet_half_angle_deg": 10.0
+      }
+    },
+    {
+      "id": "TALL-EQUIP",
+      "params": {
+        "align_tolerance_m": 0.0
+      }
+    }
+  ]
+}
