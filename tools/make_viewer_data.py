@@ -191,6 +191,13 @@ def run_case(c):
             pid = t.ga_create_project(takeoff_ids=[r["takeoff_id"]], project_name=c["key"],
                                       options=req.get("import_options"))["project_id"]
         patch = {k: v for k, v in req.items() if not k.startswith("_") and k != "import_options"}
+        # ga_update_ir 의 set.constraints 는 목록을 통째로 바꾼다 — 기능 요건만 넣으면 앞서 적용한
+        # 설계요건 제약(원전: FIRE-20FT·FIRE-HATCH·TURBINE-25 등)이 지워진다. 기존 목록에 id 기준으로 합친다.
+        if "constraints" in (patch.get("set") or {}):
+            cur = t._load_ir(pid)[1].get("constraints") or []
+            new_ids = {x["id"] for x in patch["set"]["constraints"]}
+            patch = dict(patch, set=dict(patch["set"], constraints=[x for x in cur if x["id"] not in new_ids]
+                                         + list(patch["set"]["constraints"])))
         t.ga_update_ir(project_id=pid, patch=patch, reason=f"기능 유지 요건 {c['req']}")
         if not t.ga_validate(project_id=pid)["passed"]:
             raise SystemExit(f"{c['key']}: Gate 1 실패")
@@ -290,14 +297,25 @@ def _previous():
 
 def main():
     prev = _previous()
+    only = set(sys.argv[sys.argv.index("--only") + 1].split(",")) if "--only" in sys.argv else None
+    keep = []
+    if only:   # 나머지 사례는 기존 data.js 를 그대로 둔다
+        with open(OUT, encoding="utf-8") as fp:
+            txt = fp.read()
+        keep = json.loads(txt[txt.index("["):txt.rindex("]") + 1])
     jobs = []
     for c in CASES:
+        if only and c["key"] not in only:
+            continue
         if not c["src"].startswith("example:") and not os.path.exists(c["src"]):
             print(f"  {c['key']}: 도면 파일 없음 ({c['src']}) — 건너뛴다. 받는 곳: {c.get('source_url')}")
             continue
         jobs.append(c)
     with mp.Pool(min(len(jobs), max(1, os.cpu_count() or 1))) as pool:
         cases = pool.map(run_case, jobs)
+    if only:
+        got = {c["key"]: c for c in cases}
+        cases = [got.get(c["key"], c) for c in keep]
     for c in cases:
         if c["key"] in prev:
             c["previous_area_only"] = prev[c["key"]]

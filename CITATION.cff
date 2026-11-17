@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "GA Layout Optimizer"
+abstract: >-
+  Function-preserving General Arrangement (layout) optimization from existing drawings.
+  A deterministic Sequence-Pair / simulated-annealing engine searches for a smaller layout
+  that keeps every space functional, and scores the as-is layout with the same objective.
+type: software
+authors:
+  - name: "MEIC Lab"
+version: 0.3.0
+date-released: 2026-11-17
+license: Apache-2.0
+repository-code: "https://github.com/hajun011103/ga-layout-optimizer"
+url: "https://hajun011103.github.io/ga-layout-optimizer/"
+keywords:
+  - layout-optimization
+  - general-arrangement
+  - facility-layout
+  - plant-layout
+  - building-layout
+  - mcp
