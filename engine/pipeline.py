@@ -101,7 +101,7 @@ def optimize_ir(ir: dict, out: str, *, mode: str = "sa", effort: str = "normal",
         total = p["iters"] * p["restarts"]
 
         def tick(r, it, bestF):
-            say(f"SA restart {r+1}/{p['restarts']} · iter {it:,} · 최선 F {bestF:,.0f}",
+            say(f"탐색 {r+1}/{p['restarts']}회차 · {it:,}회 반복 · 현재 최선 {bestF:,.0f}",
                 0.02 + 0.9 * (r * p["iters"] + it) / max(1, total))
         init = None
         if asis is not None and asis.get("blocks"):
@@ -171,12 +171,12 @@ def optimize_ir(ir: dict, out: str, *, mode: str = "sa", effort: str = "normal",
         cmp_["asis_better"] = a_key < o_key
         if cmp_["asis_better"]:
             cmp_["claimable"] = False
-            cmp_["verdict"] = ("현황 배치가 최적화 해보다 낫다 (같은 목적함수). 이 조건에서 솔버는 "
-                               "더 작은 실현가능 배치를 찾지 못했다 — 현황 유지를 권고한다.")
+            cmp_["verdict"] = ("같은 기준으로 채점하면 현황 배치가 더 낫다. 이 조건에서는 요건을 지키는 "
+                               "더 나은 배치를 찾지 못했다. 현황 유지를 권고한다.")
         elif opt_m["hard_violation_count"]:
-            cmp_["verdict"] = "최적화 해에 hard 위반이 남아 채택할 수 없다 — 탐색량을 늘리거나 요건을 재검토할 것."
+            cmp_["verdict"] = "최적화안에 필수 요건 위반이 남아 채택할 수 없다. 탐색량을 늘리거나 요건을 다시 검토해야 한다."
         else:
-            cmp_["verdict"] = "최적화 해가 현황보다 작고 hard 위반 0건이다 — 설계 검토 후보."
+            cmp_["verdict"] = "최적화안이 같은 기준으로 현황보다 낫고 필수 요건 위반이 없다. 설계 검토 후보로 쓸 수 있다."
 
     summary = dict(
         project=spec.project,

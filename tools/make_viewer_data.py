@@ -191,13 +191,6 @@ def run_case(c):
             pid = t.ga_create_project(takeoff_ids=[r["takeoff_id"]], project_name=c["key"],
                                       options=req.get("import_options"))["project_id"]
         patch = {k: v for k, v in req.items() if not k.startswith("_") and k != "import_options"}
-        # ga_update_ir 의 set.constraints 는 목록을 통째로 바꾼다 — 기능 요건만 넣으면 앞서 적용한
-        # 설계요건 제약(원전: FIRE-20FT·FIRE-HATCH·TURBINE-25 등)이 지워진다. 기존 목록에 id 기준으로 합친다.
-        if "constraints" in (patch.get("set") or {}):
-            cur = t._load_ir(pid)[1].get("constraints") or []
-            new_ids = {x["id"] for x in patch["set"]["constraints"]}
-            patch = dict(patch, set=dict(patch["set"], constraints=[x for x in cur if x["id"] not in new_ids]
-                                         + list(patch["set"]["constraints"])))
         t.ga_update_ir(project_id=pid, patch=patch, reason=f"기능 유지 요건 {c['req']}")
         if not t.ga_validate(project_id=pid)["passed"]:
             raise SystemExit(f"{c['key']}: Gate 1 실패")

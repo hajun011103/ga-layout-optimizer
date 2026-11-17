@@ -1501,6 +1501,12 @@ register(ConstraintDef(
 ))
 
 
+def _iga(word: str) -> str:
+    """받침이 있으면 '이', 없으면 '가'."""
+    ch = word[-1:] if word else ""
+    return "이" if "가" <= ch <= "힣" and (ord(ch) - 0xAC00) % 28 else "가"
+
+
 def _eval_rack_serve(ctx: EvalContext, p: dict) -> List[Violation]:
     cid = "RACK-SERVE"
     rtype = _get(p, "rack_type", cid)
@@ -1509,27 +1515,31 @@ def _eval_rack_serve(ctx: EvalContext, p: dict) -> List[Violation]:
     served = ctx.resolve(_need(p, "served", cid))
     sp = ctx.spec
     out: List[Violation] = []
+    # 공급 요소 종류에 맞는 말로 알린다 (크레인 위반을 '배관대에서 …' 로 쓰지 않게)
+    noun, lack = {"piperack": ("배관대", "배관을 받을 수 없음"),
+                  "crane": ("크레인", "크레인 작업반경 밖"),
+                  "road": ("도로", "도로에서 접근할 수 없음")}.get(rtype, (str(rtype), "공급 범위 밖"))
     for f in range(sp.n_floors):
         items = _on_floor(ctx, f)
         rect = {i: r for i, r in items}
         racks = [i for i, _ in items if sp.blocks[i].circulation == rtype]
         if not racks:
             if any(i in rect for i in served):
-                out.append(Violation(cid, f"{f+1}층에 배관대가 없다", 50.0, "m", True, []))
+                out.append(Violation(cid, f"{f+1}층에 {noun}{_iga(noun)} 없다", 50.0, "m", True, []))
             continue
         wmin = min(min(rect[i][2], rect[i][3]) for i in racks) * 0.5
         comps = _components(racks, rect, lambda i, j: _touch_len(rect[i], rect[j], _tol_of(ctx, i, j, tol))[0] >= wmin)
         for c in (comps[1:] if _get(p, "connected", cid) else []):
             g = min(_touch_len(rect[a], rect[b], _tol_of(ctx, a, b, tol))[1] for a in c for b in comps[0])
-            out.append(Violation(cid, f"배관대가 끊겼다 ({', '.join(sp.blocks[i].id for i in c[:3])} 가 {g:.1f} m 떨어짐)",
+            out.append(Violation(cid, f"{noun}{_iga(noun)} 끊겼다 ({', '.join(sp.blocks[i].id for i in c[:3])} 가 {g:.1f} m 떨어짐)",
                                  g + wmin, "m", True, [sp.blocks[i].id for i in c]))
         for i in served:
             if i not in rect:
                 continue
             g = min(_touch_len(rect[i], rect[r], tol)[1] for r in racks)
             if g > dmax + 1e-9:
-                out.append(Violation(cid, f"{sp.blocks[i].id}({sp.blocks[i].name}): 배관대에서 {g:.1f} m > 허용 {dmax:g} m — "
-                                          f"배관을 받을 수 없음", g - dmax, "m", True, [sp.blocks[i].id],
+                out.append(Violation(cid, f"{sp.blocks[i].id}({sp.blocks[i].name}): {noun}에서 {g:.1f} m > 허용 {dmax:g} m — "
+                                          f"{lack}", g - dmax, "m", True, [sp.blocks[i].id],
                                      marker=dict(kind="rect", floor=f, a=rect[i])))
     return out
 

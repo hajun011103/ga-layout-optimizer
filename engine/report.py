@@ -75,8 +75,8 @@ def write_html(summary: dict, out: str, path: str) -> str:
     h.append("<div class=nfc>NOT FOR CONSTRUCTION — 개념검토용</div>")
 
     if s["hard_violation_count"]:
-        h.append(f"<div class=warn>★ hard 제약 위반 {s['hard_violation_count']}건 — 이 해는 채택할 수 없다. "
-                 f"개선율을 주장하지 말 것.<ul>" +
+        h.append(f"<div class=warn>★ 필수 요건 위반 {s['hard_violation_count']}건. 이 안은 채택할 수 없다. "
+                 f"개선율도 성과로 쓸 수 없다.<ul>" +
                  "".join(f"<li>{html.escape(v['detail'])}</li>" for v in o["hard_violations"][:20]) +
                  "</ul></div>")
 
@@ -84,27 +84,27 @@ def write_html(summary: dict, out: str, path: str) -> str:
         cls = "warn" if (c.get("asis_better") or o["hard_violation_count"]) else "kpi"
         h.append(f"<div class={cls} style='margin:14px 0'>판정: {html.escape(c['verdict'])}</div>")
     ref = a or b
-    ref_name = "현황 도면" if a else "나이브 기준안"
+    ref_name = "현황 도면" if a else "단순 나열안"
     red = (c or {}).get("footprint_reduction_pct") if a else None
     h.append("<div class=kpis>")
     h.append(f"<div class=kpi><span>건축면적 (최적화)</span><b>{_fmt(o['footprint_m2'])} m²</b>"
              f"<span>{ref_name} {_fmt(ref['footprint_m2'])} m²</span></div>")
     if a:
         h.append(f"<div class=kpi><span>현황 대비 면적</span><b>{_pct(red)}</b>"
-                 f"<span>− = 줄어듦 (같은 목적함수로 채점)</span></div>")
-    h.append(f"<div class=kpi><span>외피 W × D × H</span><b>{o['width_m']:.1f} × {o['depth_m']:.1f}</b>"
+                 f"<span>− = 줄어듦 (같은 기준으로 채점)</span></div>")
+    h.append(f"<div class=kpi><span>외곽 W × D × H</span><b>{o['width_m']:.1f} × {o['depth_m']:.1f}</b>"
              f"<span>× {o['height_m']:.1f} m</span></div>")
-    h.append(f"<div class=kpi><span>hard 제약 위반</span><b class={'bad' if o['hard_violation_count'] else 'good'}>"
+    h.append(f"<div class=kpi><span>필수 요건 위반</span><b class={'bad' if o['hard_violation_count'] else 'good'}>"
              f"{o['hard_violation_count']}건</b><span>0 이어야 채택 가능</span></div>")
     h.append("</div>")
 
-    h.append("<h2>현황 · 기준안 · 최적화 비교 (같은 IR, 같은 목적함수)</h2><table>")
+    h.append("<h2>현황 · 단순 나열안 · 최적화 비교 (같은 요건, 같은 채점 기준)</h2><table>")
     h.append("<tr><th>지표</th>" + ("<th>현황(도면)</th>" if a else "") +
-             "<th>나이브 기준안</th><th>최적화</th>" + ("<th>현황 대비</th>" if a else "") + "</tr>")
-    rows = [("외피 폭 W [m]", "width_m", 1), ("외피 깊이 D [m]", "depth_m", 1),
+             "<th>단순 나열안 (참고)</th><th>최적화</th>" + ("<th>현황 대비</th>" if a else "") + "</tr>")
+    rows = [("외곽 폭 W [m]", "width_m", 1), ("외곽 깊이 D [m]", "depth_m", 1),
             ("건축면적 [m²]", "footprint_m2", 0), ("건물체적 [m³]", "volume_m3", 0),
             ("이용률 (기기 본체/바닥)", "utilization", 3), ("연결비용 (가중 거리)", "link_cost", 0),
-            ("hard 위반 [건]", "hard_violation_count", 0)]
+            ("필수 요건 위반 [건]", "hard_violation_count", 0)]
     for label, k, nd in rows:
         imp = ""
         if a:
@@ -117,18 +117,18 @@ def write_html(summary: dict, out: str, path: str) -> str:
                  f"<td>{_fmt(b.get(k), nd)}</td><td><b>{_fmt(o.get(k), nd)}</b></td>{imp}</tr>")
     h.append("</table>")
     if a:
-        h.append("<p class=sub>현황 배치는 도면 파서가 읽은 좌표 그대로를 같은 목적함수로 채점한 것이다. "
-                 "나이브 기준안(입력 순서 줄 세우기)은 참고용이며 그 대비 개선율은 성과로 쓰지 않는다.</p>")
+        h.append("<p class=sub>현황 배치는 도면에서 읽은 좌표를 그대로 두고 같은 기준으로 채점했다. "
+                 "단순 나열안(입력 순서대로 늘어놓은 배치)은 참고용이며, 이것과 비교한 개선율은 성과로 쓰지 않는다.</p>")
         if s.get("asis_clearance_overlaps"):
             h.append(f"<p class=sub>참고: 현황 도면에서 유지보수 이격(clearance)을 포함하면 겹치는 쌍 "
                      f"{len(s['asis_clearance_overlaps'])}개 — 예: "
                      f"{html.escape(', '.join(s['asis_clearance_overlaps'][:4]))}</p>")
     else:
-        h.append("<p class=sub>현황 도면이 없어 나이브 기준안과만 비교했다. 이 개선율은 상한이며 "
-                 "성과로 제시하지 말 것 (실제 기대치 −10~15%).</p>")
+        h.append("<p class=sub>현황 도면이 없어 단순 나열안과만 비교했다. 이 개선율은 상한이며 "
+                 "성과로 제시할 수 없다.</p>")
 
     if s.get("pareto"):
-        h.append("<h2>Pareto 프론트 (설계자가 고를 것)</h2><table><tr><th>#</th><th>실현</th>"
+        h.append("<h2>절충안 목록 (Pareto, 설계자가 선택)</h2><table><tr><th>#</th><th>요건 충족</th>"
                  "<th>체적 [m³]</th><th>연결비용</th><th>구역분산</th></tr>")
         for r in s["pareto"][:30]:
             h.append(f"<tr><td>{r['index']}</td><td>{'OK' if r['feasible'] else 'X'}</td>"
@@ -143,20 +143,20 @@ def write_html(summary: dict, out: str, path: str) -> str:
         right = _svg(out, f"GA_optimized_floor{f+1}.svg")
         h.append("<div class=pair>")
         if left:
-            h.append(f"<figure>{left}<figcaption>{f+1}층 — {'현황(도면)' if a else '나이브 기준안'}</figcaption></figure>")
+            h.append(f"<figure>{left}<figcaption>{f+1}층 — {'현황(도면)' if a else '단순 나열안'}</figcaption></figure>")
         if right:
             h.append(f"<figure>{right}<figcaption>{f+1}층 — 최적화</figcaption></figure>")
         h.append("</div><br>")
 
     if s.get("gate1_warnings"):
-        h.append("<h2>Gate 1 WARN (담당 엔지니어 확인 사항)</h2><ul>" +
+        h.append("<h2>검사 경고 (담당 엔지니어 확인 사항)</h2><ul>" +
                  "".join(f"<li>{html.escape(w)}</li>" for w in s["gate1_warnings"][:40]) + "</ul>")
     h.append("<h2>재현성</h2><table>")
-    for k, v in (("IR SHA-256", s["ir_sha256"]), ("결과 SHA-256", s["result_sha256"]),
-                 ("seed", s["seed"]), ("파라미터", s["params"])):
+    for k, v in (("요건(IR) SHA-256", s["ir_sha256"]), ("결과 SHA-256", s["result_sha256"]),
+                 ("시드", s["seed"]), ("파라미터", s["params"])):
         h.append(f"<tr><td>{k}</td><td><code>{html.escape(str(v))}</code></td></tr>")
-    h.append("</table><p class=sub>같은 IR 해시 + 같은 seed → 같은 결과 해시. 이 보고서의 모든 숫자는 "
-             "결정론적 솔버의 출력이며 LLM 이 쓰지 않았다.</p></main></body></html>")
+    h.append("</table><p class=sub>요건과 시드가 같으면 결과도 같다. 이 보고서의 숫자는 모두 "
+             "계산 엔진의 출력이며 AI가 고쳐 쓰지 않았다.</p></main></body></html>")
     with open(path, "w", encoding="utf-8") as fp:
         fp.write("\n".join(h))
     return path

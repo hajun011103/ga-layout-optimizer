@@ -104,7 +104,7 @@ def generate(spec: G.Spec, *, iters: int, restarts: int, seed: int,
     feas = [r for r in rows if r["hard"] == 0]
     if not feas:                               # 실현가능 해가 없으면 위반이 가장 적은 해 하나만 (경고와 함께)
         r = min(rows, key=lambda r: (r["hard_sum"], r["F"]))
-        r.update(key="best", label="위반 최소", why="hard 위반이 남은 해 — 채택할 수 없다")
+        r.update(key="best", label="위반 최소", why="필수 요건 위반이 남은 안. 채택할 수 없다")
         return [r]
 
     def pick(key, fn):

@@ -289,6 +289,32 @@ class TestProgram(unittest.TestCase):
             t.ga_update_ir(project_id=pid, reason="x", patch={"program": {"rooms": [
                 {"type": "or", "match": "OR", "target_area_m2": 37.2}]}})
 
+    def test_function_patch_keeps_earlier_constraints(self):
+        """기능 요건 패치(set.constraints)가 앞서 넣은 원전 제약을 지우지 않는다 — id 기준 병합."""
+        import json, os, sys, tempfile
+        from _util import ROOT
+        sys.path.insert(0, os.path.join(ROOT, "server"))
+        import tools as T
+        t = T.Tools(T.Workspace(tempfile.mkdtemp(prefix="smrga-"), allow_local_paths=True, allow_url_fetch=False))
+        pid = t.ga_load_example(name="smr_aux")["project"]["project_id"]
+        t.ga_apply_example_requirements(project_id=pid, name="smr_aux")
+        ids = lambda: [c["id"] for c in t._load_ir(pid)[1].get("constraints") or []]
+        before = ids()
+        self.assertIn("FIRE-20FT", before)
+        with open(os.path.join(ROOT, "examples", "function", "smr_aux.json"), encoding="utf-8") as fp:
+            req = json.load(fp)
+        t.ga_update_ir(project_id=pid, reason="x", patch={k: v for k, v in req.items() if not k.startswith("_")})
+        after = ids()
+        for cid in before:
+            self.assertIn(cid, after)
+        self.assertIn("CIRC-ACCESS", after)
+        self.assertEqual(len(after), len(set(after)))
+        # 같은 id 는 교체, 빼기는 remove_constraints 로만
+        t.ga_update_ir(project_id=pid, reason="x", patch={"remove_constraints": ["FIRE-20FT"]})
+        self.assertNotIn("FIRE-20FT", ids())
+        with self.assertRaises(T.ToolError):
+            t.ga_update_ir(project_id=pid, reason="x", patch={"remove_constraints": ["NO-SUCH"]})
+
 
 if __name__ == "__main__":
     unittest.main()

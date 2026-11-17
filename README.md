@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="docs/readme/meic-logo.png" alt="MEIC Lab" height="72">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/meic-logo-white.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/readme/meic-logo-black.png">
+  <img src="docs/readme/meic-logo-black.png" alt="MEIC Lab" height="72">
+</picture>
 
 # GA Layout Optimizer
 
@@ -25,7 +29,7 @@
 
 [![FPSO 상부 사례: 왼쪽은 원래 배치, 오른쪽은 모듈들이 위험구역 이격과 크레인 작업반경을 지키며 새 자리로 옮겨 가 바닥 면적이 6,528 m² 에서 2,788 m² 로 줄어드는 모습](docs/readme/morph-fpso.gif)](https://hajun011103.github.io/ga-layout-optimizer/)
 
-<sub>FPSO 해상 플랜트 상부 (가상 도면). 왼쪽 원래 배치 6,528 m² → 오른쪽 계산 결과 2,788 m², 규칙 위반 5 → 0.</sub>
+<sub>FPSO 해상 플랜트 상부 (가상 도면). 왼쪽 원래 배치 6,528 m² → 오른쪽 계산 결과 2,788 m², 필수 요건 위반 5 → 0.</sub>
 
 </div>
 
@@ -58,7 +62,7 @@ server use the Python standard library only and run offline. Concept-study use o
 
 </div>
 
-| 사례 | 입력 | 원래 면적 | 계산 결과 | 변화 | 규칙 위반 (원래 → 결과) | 판정 |
+| 사례 | 입력 | 원래 면적 | 계산 결과 | 변화 | 필수 요건 위반 (원래 → 결과) | 판정 |
 |---|---|--:|--:|--:|:-:|---|
 | 원전 보조건물 (가상, 3층) | DXF | 7,569 m² | 3,656 m² | −51.7% | 74 → **5** | 채택 불가 |
 | 석유화학 공정 플랜트 (가상) | 벡터 PDF | 19,764 m² | 10,396 m² | −47.4% | 16 → **0** | 설계 검토 후보 |
@@ -70,7 +74,7 @@ server use the Python standard library only and run offline. Concept-study use o
 - 원전 보조건물은 화재 분리·해치 화재구역·터빈 미사일 등 원전 제약과 피난·출입 요건을 함께 걸면 위반 5건이 남아 **채택 불가**입니다. 개선 폭을 지어내지 않고 그대로 보고합니다.
 - 병원 수술부는 조사한 기준(수술실이 청결 복도와 멸균 코어에 모두 접함)이 이 도면의 블록 구성으로는 동시에 성립하지 않습니다. 탐색이 아니라 설계 검토가 필요한 사항입니다.
 - 실제 BIM 2건은 기능을 지키면서 더 작은 안을 찾지 못해 **현황 유지**로 판정했습니다.
-- 가상 도면은 여유 공간을 일부러 담은 합성 현황이므로 **위 개선율을 성과로 인용하지 마십시오.** 실제 기대치는 기존 연구대로 −10~15% 수준으로 봅니다.
+- 가상 도면은 여유 공간을 일부러 담은 합성 현황이므로 **위 개선율을 성과로 인용하지 마십시오.** 현황 도면도 같은 요건을 지키지 못하는 사례가 많아(위반 수 참고) 면적 변화는 비교용입니다.
 
 사례별 요건·가정·후보안 비교는 [guide/RESULTS.md](guide/RESULTS.md)와 [3D 결과 페이지](https://hajun011103.github.io/ga-layout-optimizer/)에 있습니다.
 
@@ -82,8 +86,8 @@ server use the Python standard library only and run offline. Concept-study use o
 | **근거 있는 요건** | 실 출입, 동선 연결, 피난 거리, 배관대·크레인 공급, 실 규모 기준을 공개 법령·설계 지침(IBC, ADA, FGI, ASR, 10 CFR 50 등)에서 찾아 출처와 함께 넣습니다. 확인하지 못한 값은 "가정"으로 표시하고, 모르는 값은 질문으로 남깁니다. |
 | **검사와 승인** | 요건(IR)을 규칙 검사(Gate 1)로 확인하고, 담당자가 승인하면 SHA-256 해시로 동결합니다. 이후 계산에는 LLM이 관여하지 않습니다. |
 | **결정론적 최적화** | Sequence-Pair + 담금질(SA) / NSGA-II 솔버가 현황 배치에서 출발해 탐색합니다. 같은 IR 해시와 seed는 언제나 같은 결과 해시를 냅니다. |
-| **정직한 판정** | 원래 도면을 같은 목적함수로 채점해 비교합니다. 현황이 더 나으면 "현황 유지", 필수 규칙 위반이 남으면 "채택 불가"로 판정합니다. |
-| **후보안 비교** | 같은 요건을 지킨 안 중 "가장 작게 · 동선 짧게 · 덜 바꾸게 · 균형" 후보를 나란히 내고, 담당자가 고릅니다. |
+| **정직한 판정** | 원래 도면을 같은 목적함수로 채점해 비교합니다. 현황이 더 나으면 "현황 유지", 필수 요건 위반이 남으면 "채택 불가"로 판정합니다. |
+| **후보안 비교** | 같은 요건을 지킨 안 중 "가장 작게 · 동선 짧게 · 덜 바꾸게 · 균형" 후보를 나란히 내고, 담당자가 고릅니다. 스튜디오와 MCP 도구(`ga_optimize`의 `candidates`)에서 모두 쓸 수 있습니다. |
 | **산출물** | 판정 보고서(HTML), 층별 SVG 도면, CAD용 DXF(R12), 결과 JSON. 모든 도면에 `NOT FOR CONSTRUCTION`이 찍힙니다. |
 
 ## 시작하기
@@ -227,7 +231,11 @@ guide/       아키텍처 · 결과 · 벤치마크 · 한계 · 연결 문서
 
 ## 개발
 
-<img src="docs/readme/meic-logo.png" alt="MEIC Lab" height="44" align="right">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/meic-logo-white.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/readme/meic-logo-black.png">
+  <img src="docs/readme/meic-logo-black.png" alt="MEIC Lab" height="44" align="right">
+</picture>
 
 **MEIC Lab** (Mechanical Systems with Intelligence and Computer Vision)에서 수행한 연구입니다.
 문의와 버그 제보는 [Issues](https://github.com/hajun011103/ga-layout-optimizer/issues)로 남겨 주십시오.

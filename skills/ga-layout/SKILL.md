@@ -63,8 +63,9 @@ MCP 서버 `smr-ga` 의 도구(`ga_*`)가 있으면 그것을 쓴다. 없으면 
    - 이격을 묻지 않고 0 으로 두면 솔버가 기기를 맞붙여 개선율이 과장된다.
    - 연결을 묻지 않으면 면적만 줄고 동선이 무시된다.
 6. `ga_validate` → WARN 을 그대로 보여준다 → **사용자가 명시적으로 승인하면** `ga_freeze(approved_by=…)`.
-7. `ga_optimize` → `ga_run_status`. 결과의 `verdict` 를 **그대로** 전한다:
-   - "설계 검토 후보" — 현황보다 작고 hard 위반 0
+7. `ga_optimize` → `ga_run_status`. 기본으로 `candidates=4` 를 주어 후보안(가장 작게·동선 짧게·덜 바꾸게·균형)을
+   함께 내고, `summary.candidates` 를 나란히 보여 사용자가 고르게 한다. 결과의 `verdict` 를 **그대로** 전한다:
+   - "설계 검토 후보" — 같은 기준으로 현황보다 낫고 필수 요건(hard) 위반 0
    - "채택 불가" — hard 위반이 남음. 개선율을 말하지 않는다
    - "현황 유지" — 솔버가 현황보다 나은 해를 못 찾음
 8. `ga_explain` 의 `envelope_binding_blocks`(외피 크기를 정하는 블록)를 근거로

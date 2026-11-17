@@ -302,7 +302,7 @@ def main(argv=None) -> int:
     print(f"  {'항목':<18s}{'기준안':>16s}{'최적화':>16s}{'개선':>10s}")
     for n, x, y in rows:
         print(f"  {n:<18s}{x:>16,.0f}{y:>16,.0f}{imp(x,y):>9.1f}%")
-    print("  ※ 기준안이 나이브하므로 이 개선율은 상한이다. 실제 기대치는 −10~15%.")
+    print("  ※ 단순 나열안과 비교한 개선율이라 상한이다. 성과로 쓰지 말 것.")
 
     # ---- 산출물 --------------------------------------------------------------
     paths = write_outputs(spec, best, a.out, "optimized", baseline_sol=base)

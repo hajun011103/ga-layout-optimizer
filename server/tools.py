@@ -436,7 +436,7 @@ class Tools:
         unknown = {k for k in patch if not k.startswith("_")} - {"set", "blocks", "add_blocks", "remove_blocks", "add_links",
                                 "remove_links", "add_separations", "remove_separations",
                                 "add_elevations", "remove_elevations", "answered_questions",
-                                "program"}
+                                "program", "remove_constraints"}
         if unknown:
             raise ToolError(f"알 수 없는 patch 키 {sorted(unknown)}")
 
@@ -451,8 +451,26 @@ class Tools:
                 ir[k] = w
                 changes.append("merge weights " + ", ".join(sorted(v)))
                 continue
+            if k == "constraints" and isinstance(v, list):
+                # 제약도 id 기준으로 병합한다 — 목록을 통째로 바꾸면 앞서 넣은 요건(원전 화재분리 등)이
+                # 말없이 사라진다. 빼려면 remove_constraints 로 id 를 명시한다.
+                new_ids = [c.get("id") for c in v if isinstance(c, dict)]
+                if None in new_ids:
+                    raise ToolError("set.constraints 의 각 항목에 id 가 있어야 한다")
+                cur = [c for c in (ir.get("constraints") or []) if c.get("id") not in set(new_ids)]
+                ir[k] = cur + list(v)
+                changes.append("merge constraints " + ", ".join(new_ids))
+                continue
             ir[k] = v
             changes.append(f"set {k}")
+
+        if patch.get("remove_constraints"):
+            gone = set(patch["remove_constraints"])
+            missing = gone - {c.get("id") for c in ir.get("constraints") or []}
+            if missing:
+                raise ToolError(f"remove_constraints: IR 에 없는 제약 {sorted(missing)}")
+            ir["constraints"] = [c for c in ir.get("constraints") or [] if c.get("id") not in gone]
+            changes.append("-constraints " + ", ".join(sorted(gone)))
 
         idx = {b["id"]: b for b in ir["blocks"]}
         for upd in patch.get("blocks") or []:
@@ -636,7 +654,7 @@ class Tools:
 
     # ---------------------------------------------------------------- 최적화
     def ga_optimize(self, project_id=None, mode="sa", effort="normal", seed=20260826,
-                    wait_seconds=45, pick=None, **_):
+                    wait_seconds=45, pick=None, candidates=0, **_):
         d, ir = self._load_ir(project_id)
         fr = self._frozen_state(project_id, ir)
         if not fr.get("frozen"):
@@ -646,11 +664,17 @@ class Tools:
             raise ToolError("mode 는 sa | nsga")
         if effort not in pipeline.EFFORT:
             raise ToolError(f"effort 는 {sorted(pipeline.EFFORT)}")
+        candidates = int(candidates or 0)
+        if not 0 <= candidates <= 6:
+            raise ToolError("candidates 는 0~6")
+        if candidates and mode != "sa":
+            raise ToolError("candidates 는 mode=sa 에서만 쓴다")
         asis_p = os.path.join(d, "asis.json")
         asis = self.ws.rjson(asis_p) if os.path.exists(asis_p) else None
         run_id = irhash.sha256_obj(dict(ir=fr["frozen_sha256"], mode=mode, effort=effort,
                                         seed=int(seed), pick=pick, engine=ENGINE_VERSION, fp=ENGINE_FP,
-                                        asis=ASIS.asis_hash(asis) if asis else None))[:16]
+                                        asis=ASIS.asis_hash(asis) if asis else None,
+                                        **({"candidates": candidates} if candidates else {})))[:16]
         out = self.ws.p("runs", run_id)
         st = dict(run_id=run_id, project_id=project_id, status="queued", progress=0.0,
                   message="대기", started_at=_now())
@@ -671,7 +695,7 @@ class Tools:
                     st["message"], st["progress"] = msg, round(frac, 3)
                 try:
                     pipeline.optimize_ir(ir, out, mode=mode, effort=effort, seed=int(seed),
-                                         asis=asis, pick=pick, progress=prog)
+                                         asis=asis, pick=pick, n_candidates=candidates, progress=prog)
                     st["status"] = "done"
                     self.ws.log(project_id, dict(event="optimize", run_id=run_id, mode=mode,
                                                  effort=effort, seed=int(seed)))
@@ -724,7 +748,7 @@ class Tools:
                          caution="현황 도면이 없어 나이브 기준안과만 비교 — 이 개선율은 성과로 쓰지 말 것")
         warn = None
         if o["hard_violation_count"]:
-            warn = (f"★ hard 제약 위반 {o['hard_violation_count']}건 — 이 해는 채택할 수 없다. "
+            warn = (f"★ 필수 요건(hard) 위반 {o['hard_violation_count']}건 — 이 안은 채택할 수 없다. "
                     f"개선율을 주장하지 말 것.")
         return dict(run_id=run_id, status="done", cached=cached, warning=warn, brief=brief,
                     report=files.get("report.html"), files=files,
@@ -886,7 +910,9 @@ TOOL_DEFS: List[dict] = [
                       "patch 예: {\"set\":{\"floor_heights\":[6,5]}, \"blocks\":[{\"all\":true,\"kind_filter\":\"equipment\",\"clearance\":1.0},"
                       "{\"id\":\"P-101\",\"zone\":\"RCA\"}], \"add_links\":[{\"a\":\"P-101\",\"b\":\"HX-1\",\"cost\":3,\"kind\":\"pipe\"}], "
                       "\"add_separations\":[{\"a\":\"A\",\"b\":\"B\",\"min_dist\":6.1,\"hard\":true,\"basis\":\"근거\"}], "
-                      "\"remove_links\":\"inferred\", \"answered_questions\":[\"clearance\"]}"),
+                      "\"remove_links\":\"inferred\", \"answered_questions\":[\"clearance\"]}\n"
+                      "set.constraints 와 set.weights 는 id/항 기준으로 기존 값에 병합된다 (같은 id 는 교체). "
+                      "제약을 빼려면 \"remove_constraints\":[\"ID\"] 를 쓴다."),
          schema={"type": "object", "required": ["project_id", "patch", "reason"], "properties": {
              "project_id": {"type": "string"}, "patch": {"type": "object"}, "reason": {"type": "string"}}}),
     dict(name="ga_validate", ro=True,
@@ -908,7 +934,10 @@ TOOL_DEFS: List[dict] = [
              "mode": {"type": "string", "enum": ["sa", "nsga"], "description": "sa=단일 목적(기본), nsga=Pareto 3목적"},
              "effort": {"type": "string", "enum": ["quick", "normal", "thorough"]},
              "seed": {"type": "integer"}, "wait_seconds": {"type": "number"},
-             "pick": {"type": "integer", "description": "nsga 에서 도면으로 낼 Pareto 해 번호"}}}),
+             "pick": {"type": "integer", "description": "nsga 에서 도면으로 낼 Pareto 해 번호"},
+             "candidates": {"type": "integer", "minimum": 0, "maximum": 6,
+                            "description": "성격이 다른 후보안 수 (가장 작게·동선 짧게·덜 바꾸게·균형). 0=대표 해만. "
+                                           "후보를 내면 시간이 약 3배 걸린다. 결과의 summary.candidates 를 사용자에게 나란히 보여 주고 고르게 할 것."}}}),
     dict(name="ga_run_status", ro=True,
          description="최적화 진행 상태/결과.",
          schema={"type": "object", "required": ["run_id"], "properties": {"run_id": {"type": "string"}}}),

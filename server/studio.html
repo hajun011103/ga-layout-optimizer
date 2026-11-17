@@ -66,9 +66,9 @@ th{color:var(--mut);font-weight:600;font-size:12px}
 <body>
 <header>
   <h1>GA Studio</h1>
-  <span class="sub">도면 → 인식 → 요건 확인 → Gate 1 승인 → 결정론적 최적화 → 현황 대비 비교</span>
+  <span class="sub">도면 → 인식 → 요건 확인 → 검사·승인 → 배치 계산 → 현황 비교</span>
   <span class="badge">NOT FOR CONSTRUCTION</span>
-  <span class="conn" id="conn">MCP 연결 중…</span>
+  <span class="conn" id="conn">서버 연결 중…</span>
 </header>
 <div class="wrap">
 <main>
@@ -78,7 +78,7 @@ th{color:var(--mut);font-weight:600;font-size:12px}
     <div class="drop" id="drop">도면 파일을 여기에 끌어 놓거나 클릭 — DXF · SVG · PDF(벡터) · PNG · IFC · CSV/XLSX
       <input type="file" id="file" class="hide"></div>
     <div class="row" style="margin-top:10px">
-      <label>단위(units)<select id="o_units"><option value="">파일 헤더</option><option>m</option><option>mm</option><option>cm</option><option>ft</option><option>in</option></select></label>
+      <label>단위<select id="o_units"><option value="">파일에 적힌 값</option><option>m</option><option>mm</option><option>cm</option><option>ft</option><option>in</option></select></label>
       <label>축척 1:N (PDF)<input type="number" id="o_ratio" placeholder="예: 200"></label>
       <label>px / m (PNG·SVG)<input type="number" id="o_ppm" placeholder="예: 20"></label>
       <label>문 틈 메우기 px<input type="number" id="o_gap" placeholder="PNG"></label>
@@ -103,7 +103,7 @@ th{color:var(--mut);font-weight:600;font-size:12px}
       <button id="mkproj" disabled>프로젝트 만들기</button>
       <button class="ghost hide" id="applyreq">예제 설계요건 적용</button>
       <button class="ghost hide" id="applyans">답변 반영</button>
-      <label class="hide" id="reqlbl">설계요건 파일 (JSON 패치)<input type="file" id="reqfile" accept=".json,application/json"></label>
+      <label class="hide" id="reqlbl">설계요건 파일 (JSON)<input type="file" id="reqfile" accept=".json,application/json"></label>
     </div>
     <div id="proj" class="hide">
       <div class="chips" id="projchips"></div>
@@ -113,12 +113,12 @@ th{color:var(--mut);font-weight:600;font-size:12px}
 
   <!-- 3. Gate 1 -->
   <section class="card dim" id="c3">
-    <h2><span class="step">3</span>Gate 1 — 결정론적 검증 · 사람 승인</h2>
+    <h2><span class="step">3</span>검사와 승인</h2>
     <div class="row">
-      <button id="val" disabled>검증</button>
+      <button id="val" disabled>요건 검사</button>
       <label>승인자<input id="appr" placeholder="이름 / 직함" style="width:180px"></label>
-      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="ack">WARN 확인함</label>
-      <button id="frz" disabled>승인 · IR 동결</button>
+      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="ack">경고 확인함</label>
+      <button id="frz" disabled>승인 · 요건 확정</button>
     </div>
     <div id="gate" class="hide">
       <div class="chips" id="gatechips"></div>
@@ -129,11 +129,12 @@ th{color:var(--mut);font-weight:600;font-size:12px}
 
   <!-- 4. 최적화 -->
   <section class="card dim" id="c4">
-    <h2><span class="step">4</span>최적화 · 현황 대비 비교</h2>
+    <h2><span class="step">4</span>최적화 · 현황 비교</h2>
     <div class="row">
       <label>탐색량<select id="eff"><option value="quick">빠르게</option><option value="normal" selected>보통</option><option value="thorough">충분히</option></select></label>
-      <label>모드<select id="mode"><option value="sa">단일 목적 (SA)</option><option value="nsga">Pareto (NSGA-II)</option></select></label>
-      <label>seed<input type="number" id="seed" value="20260826"></label>
+      <label>계산 방식<select id="mode"><option value="sa">최적안 1개 (SA)</option><option value="nsga">절충안 비교 (Pareto, NSGA-II)</option></select></label>
+      <label>후보안<select id="cand"><option value="4" selected>4개 (가장 작게·동선 짧게·덜 바꾸게·균형)</option><option value="0">대표안만 (빠름)</option></select></label>
+      <label>시드 (재현용)<input type="number" id="seed" value="20260826"></label>
       <button id="run" disabled>최적화 실행</button>
     </div>
     <div class="bar"><i id="bar"></i></div><div class="mut" id="runmsg"></div>
@@ -141,6 +142,7 @@ th{color:var(--mut);font-weight:600;font-size:12px}
       <div id="verdict" class="verdict"></div>
       <div class="kpis" id="kpis"></div>
       <table id="cmp"></table>
+      <div id="cands"></div>
       <div id="resimgs"></div>
       <p class="links" id="links"></p>
       <p class="mut" id="repro"></p>
@@ -148,8 +150,8 @@ th{color:var(--mut);font-weight:600;font-size:12px}
   </section>
 </main>
 <aside>
-  <section class="card log" id="log"><h2 style="font-family:inherit">MCP 호출 기록</h2>
-    <div class="mut" style="font-family:inherit">이 화면은 Claude·ChatGPT 가 쓰는 것과 같은 MCP 도구(<code>/mcp</code>)를 호출한다.</div>
+  <section class="card log" id="log"><h2 style="font-family:inherit">실행 기록</h2>
+    <div class="mut" style="font-family:inherit">이 화면은 Claude·ChatGPT 연결과 같은 도구(<code>/mcp</code>)를 씁니다.</div>
   </section>
 </aside>
 </div>
@@ -200,7 +202,7 @@ function alertErr(e){ alert(e.message || e); }
   logE("initialize", {}, 0, j.result.serverInfo);
   const ex = await tool("ga_list_examples");
   for (const e of ex.examples){ const o=document.createElement("option"); o.value=e.name; o.textContent=e.title; $("ex").appendChild(o); }
-})().catch(e => { $("conn").textContent = "MCP 연결 실패: " + e.message; });
+})().catch(e => { $("conn").textContent = "서버 연결 실패: " + e.message; });
 
 // ---- 1. 업로드 / import ----
 const drop = $("drop");
@@ -239,7 +241,7 @@ function showImport(r){
     `층 <b>${r.stats.floors}</b>`, `축척: ${esc(r.scale_basis)}`
   ].map(x=>`<span class="chip">${x}</span>`).join("");
   $("impimgs").innerHTML = Object.entries(r.preview_svg).map(([fl,l]) =>
-    `<figure><img src="${l.url}" alt=""><figcaption>${fl} 인식 결과 — 파서가 읽은 그대로 (LLM 미개입)</figcaption></figure>`).join("");
+    `<figure><img src="${l.url}" alt=""><figcaption>${fl} 인식 결과. 도면에서 읽은 그대로</figcaption></figure>`).join("");
   $("impwarn").innerHTML = (r.warnings||[]).slice(0,8).map(w=>`<li>${esc(w)}</li>`).join("");
   enable("c2"); $("mkproj").disabled = false;
 }
@@ -315,7 +317,7 @@ $("val").onclick = async () => {
     $("gate").classList.remove("hide");
     $("gatechips").innerHTML = [
       r.passed ? `<span class="ok">통과</span>` : `<span class="bad">불통과</span>`,
-      `ERROR <b>${r.errors.length}</b>`, `WARN <b>${r.warnings.length}</b>`, `IR <b>${r.ir_sha256.slice(0,12)}…</b>`
+      `오류 <b>${r.errors.length}</b>`, `경고 <b>${r.warnings.length}</b>`, `요건 해시 <b>${r.ir_sha256.slice(0,12)}…</b>`
     ].map(x=>`<span class="chip">${x}</span>`).join("");
     $("gateerr").innerHTML = r.errors.map(w=>`<li>${esc(w)}</li>`).join("");
     $("gatewarn").innerHTML = r.warnings.slice(0,10).map(w=>`<li>${esc(w)}</li>`).join("") + (r.warnings.length>10?`<li>… 외 ${r.warnings.length-10}건</li>`:"");
@@ -325,7 +327,7 @@ $("val").onclick = async () => {
 $("frz").onclick = async () => {
   try{
     const r = await tool("ga_freeze", {project_id:S.project, approved_by:$("appr").value, acknowledged_warnings:$("ack").checked});
-    $("gatechips").innerHTML += `<span class="chip"><span class="ok">동결</span> ${esc(r.approved_by)} · ${r.ir_sha256.slice(0,12)}…</span>`;
+    $("gatechips").innerHTML += `<span class="chip"><span class="ok">확정</span> ${esc(r.approved_by)} · ${r.ir_sha256.slice(0,12)}…</span>`;
     enable("c4"); $("run").disabled = false;
   }catch(e){ alertErr(e); }
 };
@@ -334,14 +336,16 @@ $("frz").onclick = async () => {
 $("run").onclick = async () => {
   $("run").disabled = true; $("res").classList.add("hide");
   try{
-    let r = await tool("ga_optimize", {project_id:S.project, effort:$("eff").value, mode:$("mode").value, seed:+$("seed").value, wait_seconds:1});
+    const mode = $("mode").value;
+    let r = await tool("ga_optimize", {project_id:S.project, effort:$("eff").value, mode, seed:+$("seed").value, wait_seconds:1,
+                                      candidates: mode === "sa" ? +$("cand").value : 0});
     while (r.status !== "done"){
       if (r.status === "error") throw new Error(r.message);
       $("bar").style.width = Math.round((r.progress||0)*100) + "%"; $("runmsg").textContent = r.message || "";
       await new Promise(ok => setTimeout(ok, 700));
       r = await tool("ga_run_status", {run_id:r.run_id});
     }
-    $("bar").style.width = "100%"; $("runmsg").textContent = r.cached ? "같은 IR·seed 의 결과가 이미 있다 (결정론) — 재사용" : "완료";
+    $("bar").style.width = "100%"; $("runmsg").textContent = r.cached ? "같은 요건·시드로 계산한 결과가 있어 그대로 불러왔습니다" : "완료";
     showResult(r);
   }catch(e){ $("runmsg").textContent = "실패: " + e.message; }
   finally { $("run").disabled = false; }
@@ -351,7 +355,7 @@ function showResult(r){
   S.run = r.run_id;
   const s = r.summary, o = s.optimized, a = s.asis, c = s.comparison, b = s.naive_baseline;
   $("res").classList.remove("hide");
-  const v = c && c.verdict ? c.verdict : (o.hard_violation_count ? "hard 위반이 남아 채택할 수 없다" : "");
+  const v = c && c.verdict ? c.verdict : (o.hard_violation_count ? "필수 요건 위반이 남아 채택할 수 없습니다" : "");
   $("verdict").textContent = v ? "판정: " + v : "";
   $("verdict").className = "verdict" + ((c && (c.asis_better || !c.claimable)) || o.hard_violation_count ? " no" : "");
   $("verdict").style.display = v ? "" : "none";
@@ -359,22 +363,29 @@ function showResult(r){
     a ? `<div class="kpi"><span>건축면적 · 현황 → 최적화</span><b>${fmt(a.footprint_m2)} → ${fmt(o.footprint_m2)} m²</b></div>` :
         `<div class="kpi"><span>건축면적 (최적화)</span><b>${fmt(o.footprint_m2)} m²</b></div>`,
     a ? `<div class="kpi"><span>현황 대비 면적</span><b>${pct(c.footprint_reduction_pct)}</b></div>` : "",
-    `<div class="kpi"><span>외피 W × D</span><b>${fmt(o.width_m,1)} × ${fmt(o.depth_m,1)} m</b></div>`,
-    `<div class="kpi"><span>hard 제약 위반</span><b class="${o.hard_violation_count?'bad':'good'}">${o.hard_violation_count}건${a?` <small class="mut">(현황 ${a.hard_violation_count})</small>`:""}</b></div>`
-  ].join("");
-  const rows = [["외피 폭 W [m]","width_m",1],["외피 깊이 D [m]","depth_m",1],["건축면적 [m²]","footprint_m2",0],["건물체적 [m³]","volume_m3",0],["연결비용","link_cost",0],["hard 위반","hard_violation_count",0]];
-  $("cmp").innerHTML = `<tr><th>지표</th>${a?"<th>현황(도면)</th>":""}<th>나이브 기준안</th><th>최적화</th>${a?"<th>현황 대비</th>":""}</tr>` +
+    `<div class="kpi"><span>외곽 W × D</span><b>${fmt(o.width_m,1)} × ${fmt(o.depth_m,1)} m</b></div>`,
+    `<div class="kpi"><span>필수 요건 위반</span><b class="${o.hard_violation_count?'bad':'good'}">${o.hard_violation_count}건${a?` <small class="mut">(현황 ${a.hard_violation_count})</small>`:""}</b></div>`
+  ].join("") + (a && a.hard_violation_count ? `<p class="mut" style="grid-column:1/-1;margin:0">현황 도면도 같은 요건을 지키지 못합니다 (위반 ${a.hard_violation_count}건). 면적 변화는 비교용이며 성과 수치가 아닙니다.</p>` : "");
+  const cs = s.candidates || [];
+  $("cands").innerHTML = cs.length > 1 ? `<h3 style="font-size:14px;margin:14px 0 6px">후보안 ${cs.length}개. 모두 같은 요건으로 계산한 안이며, 고르는 것은 담당자입니다.</h3>
+    <table><tr><th>후보</th><th>건축면적 [m²]</th><th>현황 대비</th><th>연결비용</th><th>실 평균 이동 [m]</th><th>필수 요건 위반</th></tr>` +
+    cs.map((k,i) => `<tr><td>${i===0?"<b>":""}${esc(k.label)}${i===0?"</b> (아래 도면)":""}</td><td>${fmt(k.metrics.footprint_m2)}</td>
+      <td>${a?pct((a.footprint_m2-k.metrics.footprint_m2)/a.footprint_m2*100):"—"}</td><td>${fmt(k.metrics.link_cost)}</td>
+      <td>${k.moved_m==null?"—":fmt(k.moved_m,1)}</td><td class="${k.metrics.hard_violation_count?'bad':'good'}">${k.metrics.hard_violation_count}건</td></tr>`).join("") + `</table>`
+    : (cs.length === 1 && cs[0].metrics.hard_violation_count ? `<p class="mut" style="margin:12px 0 0">요건을 모두 지키는 안이 없어 후보안을 나란히 내지 않았습니다. 위반이 가장 적은 안만 보여 줍니다.</p>` : "");
+  const rows = [["외곽 폭 W [m]","width_m",1],["외곽 깊이 D [m]","depth_m",1],["건축면적 [m²]","footprint_m2",0],["건물체적 [m³]","volume_m3",0],["연결비용","link_cost",0],["필수 요건 위반","hard_violation_count",0]];
+  $("cmp").innerHTML = `<tr><th>지표</th>${a?"<th>현황(도면)</th>":""}<th>단순 나열안 (참고)</th><th>최적화</th>${a?"<th>현황 대비</th>":""}</tr>` +
     rows.map(([l,k,nd]) => `<tr><td>${l}</td>${a?`<td>${fmt(a[k],nd)}</td>`:""}<td>${fmt(b[k],nd)}</td><td><b>${fmt(o[k],nd)}</b></td>${a?`<td>${(a[k]&&k!=="hard_violation_count")?pct((a[k]-o[k])/a[k]*100):""}</td>`:""}</tr>`).join("");
   let h = "";
   for (let f=1; f<=s.floors; f++){
     const L = r.files[`GA_asis_floor${f}.svg`], R = r.files[`GA_optimized_floor${f}.svg`];
     h += `<div class="imgs">` + (L?`<figure><img src="${L.url}"><figcaption>${f}층 — 현황(도면)</figcaption></figure>`:"") +
-         (R?`<figure><img src="${R.url}"><figcaption>${f}층 — 최적화 (솔버 출력)</figcaption></figure>`:"") + `</div>`;
+         (R?`<figure><img src="${R.url}"><figcaption>${f}층 — 최적화 (계산 결과)</figcaption></figure>`:"") + `</div>`;
   }
   $("resimgs").innerHTML = h;
   $("links").innerHTML = [["보고서 (HTML)", r.files["report.html"]], ["DXF (CAD)", r.files["GA_optimized.dxf"]], ["결과 JSON", r.files["result.json"]]]
     .filter(x=>x[1]).map(([t,l])=>`<a href="${l.url}" target="_blank">${t}</a>`).join("");
-  $("repro").textContent = `재현성 — IR ${r.reproducibility.ir_sha256.slice(0,12)}… + seed ${r.reproducibility.seed} → 결과 ${r.reproducibility.result_sha256.slice(0,12)}… · ${s.wall_time_s}s` + (r.warning?(" · "+r.warning):"");
+  $("repro").textContent = `재현 정보: 요건 ${r.reproducibility.ir_sha256.slice(0,12)}… + 시드 ${r.reproducibility.seed} → 결과 ${r.reproducibility.result_sha256.slice(0,12)}… · ${s.wall_time_s}s` + (r.warning?(" · "+r.warning):"");
 }
 </script>
 </body>
