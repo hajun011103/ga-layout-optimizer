@@ -17,10 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python: ["3.9", "3.11", "3.13"]
+        python: ["3.11", "3.13"]
         include:
-          - os: ubuntu-22.04        # 3.8 은 최신 이미지에 없어 한 단계 전 이미지에서 확인한다
+          - os: ubuntu-22.04        # 3.8·3.9 는 최신 이미지에 없어 이전 이미지에서 확인한다
             python: "3.8"
+          - os: ubuntu-22.04
+            python: "3.9"
           - os: windows-latest
             python: "3.11"
     env:

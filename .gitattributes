@@ -1,0 +1,7 @@
+# 도면·예제·픽스처는 바이트 그대로 둔다 (Windows 에서 줄바꿈이 바뀌면 파서 입력과 결과 해시가 달라진다)
+tests/fixtures/** -text
+tests/data/** -text
+examples/drawings/** -text
+*.dxf -text
+*.svg -text
+*.ifc -text
