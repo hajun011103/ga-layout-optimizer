@@ -372,7 +372,8 @@ function showResult(r){
     cs.map((k,i) => `<tr><td>${i===0?"<b>":""}${esc(k.label)}${i===0?"</b> (아래 도면)":""}</td><td>${fmt(k.metrics.footprint_m2)}</td>
       <td>${a?pct((a.footprint_m2-k.metrics.footprint_m2)/a.footprint_m2*100):"—"}</td><td>${fmt(k.metrics.link_cost)}</td>
       <td>${k.moved_m==null?"—":fmt(k.moved_m,1)}</td><td class="${k.metrics.hard_violation_count?'bad':'good'}">${k.metrics.hard_violation_count}건</td></tr>`).join("") + `</table>`
-    : (cs.length === 1 && cs[0].metrics.hard_violation_count ? `<p class="mut" style="margin:12px 0 0">요건을 모두 지키는 안이 없어 후보안을 나란히 내지 않았습니다. 위반이 가장 적은 안만 보여 줍니다.</p>` : "");
+    : (cs.length === 1 && cs[0].metrics.hard_violation_count ? `<p class="mut" id="cands-note" style="margin:12px 0 0">요건을 모두 지키는 안이 없어 후보안을 나란히 내지 않았습니다. 위반이 가장 적은 안만 보여 줍니다.</p>`
+       : cs.length === 1 ? `<p class="mut" id="cands-note" style="margin:12px 0 0">후보안 기준(${esc(cs[0].label.split(" · ").slice(1).join(" · ") || cs[0].label)})이 모두 같은 안을 골랐습니다. 성격이 다른 안이 없어 이 안 하나만 보여 줍니다.</p>` : "");
   const rows = [["외곽 폭 W [m]","width_m",1],["외곽 깊이 D [m]","depth_m",1],["건축면적 [m²]","footprint_m2",0],["건물체적 [m³]","volume_m3",0],["연결비용","link_cost",0],["필수 요건 위반","hard_violation_count",0]];
   $("cmp").innerHTML = `<tr><th>지표</th>${a?"<th>현황(도면)</th>":""}<th>단순 나열안 (참고)</th><th>최적화</th>${a?"<th>현황 대비</th>":""}</tr>` +
     rows.map(([l,k,nd]) => `<tr><td>${l}</td>${a?`<td>${fmt(a[k],nd)}</td>`:""}<td>${fmt(b[k],nd)}</td><td><b>${fmt(o[k],nd)}</b></td>${a?`<td>${(a[k]&&k!=="hard_violation_count")?pct((a[k]-o[k])/a[k]*100):""}</td>`:""}</tr>`).join("");

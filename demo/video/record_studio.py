@@ -108,6 +108,8 @@ with sync_playwright() as pw:
     r.to("#cands", 70)
     if page.locator("#cands table").count():
         r.cap("후보안을 나란히 비교합니다. 고르는 것은 담당자입니다", 5.0)
+    elif "같은 안" in (page.text_content("#cands") or ""):
+        r.cap("후보안 기준이 모두 같은 안을 고르면, 그 안 하나만 보여 줍니다", 5.0)
     else:
         r.cap("요건을 모두 지키는 안이 없으면 후보안을 내지 않고, 위반이 가장 적은 안만 보여 줍니다", 5.0)
     r.to("#resimgs", 70)
