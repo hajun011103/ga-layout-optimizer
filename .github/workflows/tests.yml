@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.9", "3.11", "3.13"]
+        include:
+          - os: ubuntu-22.04        # 3.8 은 최신 이미지에 없어 한 단계 전 이미지에서 확인한다
+            python: "3.8"
+          - os: windows-latest
+            python: "3.11"
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # 엔진·서버는 표준 라이브러리만 쓴다 — 설치 단계가 없어야 정상이다.
+      - name: Check stdlib-only imports
+        shell: bash
+        run: python -I -c "import sys; sys.path[:0]=['engine','server']; import ga_core, pipeline, tools, mcp_server; print('ok')"
+      - name: Run tests
+        run: python tests/run_all.py

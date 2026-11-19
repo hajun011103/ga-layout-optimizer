@@ -990,7 +990,7 @@ def baseline(spec: Spec, seed: int = 0) -> Solution:
     전형적 수작업 배치. 같은 Sequence-Pair 표현으로 같은 목적함수로 평가한다.
 
     ※ 이 기준안은 나이브하다. 여기서 나오는 개선율(프로토타입에서 −42.6%)을
-      성과로 제시하면 안 된다. 실제 기대치는 −10~15% 이다. (README 참조)
+      성과로 제시하면 안 된다 (단순 나열안 대비 개선율은 상한일 뿐이다).
     """
     rng = random.Random(seed)
     s = Solution(spec, rng)

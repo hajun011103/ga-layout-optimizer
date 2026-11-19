@@ -446,7 +446,7 @@ details.more li b{color:var(--fg);font-weight:600}
     <div>
       <p>앞의 네 탭은 시연을 위해 만든 <b>가상 도면</b>이고, 뒤의 두 탭은 <b>공개된 실제 건물 BIM</b>입니다. 기능 요건은 탭마다 근거를 적었고, 확인하지 못한 값은 '가정'이라고 표시했습니다. <b>어느 쪽의 개선율도 성과로 인용하면 안 됩니다.</b></p>
       <p>배치 좌표는 AI가 정한 것이 아니라, 같은 입력이면 항상 같은 답을 내는 계산 프로그램(결정론적 솔버)이 계산했습니다. 더 줄일 여지가 없으면 프로그램은 개선을 지어내지 않고 "현재 배치 유지"라고 답합니다. 개념 검토용이며 시공용이 아닙니다.</p>
-      <p class="meta">탐색량 thorough · seed <span id="f-seed"></span> · 결과 해시 <code id="f-hash"></code> · <a href="https://github.com/hajun011103/ga-layout-optimizer">GitHub 저장소</a> · 데이터 재생성 <code>python3 tools/make_viewer_data.py</code></p>
+      <p class="meta">탐색량 <span id="f-eff">thorough</span> · seed <span id="f-seed"></span> · 결과 해시 <code id="f-hash"></code> · <a href="https://github.com/hajun011103/ga-layout-optimizer">GitHub 저장소</a> · 데이터 재생성 <code>python3 tools/make_viewer_data.py</code></p>
     </div>
   </footer>
 </div>
@@ -907,6 +907,7 @@ function show(i) {
   const all = [...a.violations.map(x => ["현황", x]), ...o.violations.map(x => ["최적화", x])];
   $("viol-list").innerHTML = all.length ? all.map(([w, x]) => `<li><b>${w}</b> — ${esc(plain(x.detail))}</li>`).join("") : "<li>없음</li>";
   $("f-seed").textContent = c.seed;
+  $("f-eff").textContent = c.effort || "thorough";
   $("f-hash").textContent = c.result_sha256.slice(0, 12);
   renderAll();
 }

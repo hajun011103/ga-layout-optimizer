@@ -6,7 +6,7 @@ make_viewer_data.py — docs/data.js 를 만든다 (3D 비교 페이지용 데�
 '기능 유지 요건'(examples/function/*.json — 근거 인용) 을 적용해 결정론적 솔버로 최적화한다.
 좌표는 파서(현황)와 솔버(최적화)가 만든 그대로이며, 이 스크립트는 단위만 정리한다.
 
-  python3 tools/make_viewer_data.py            # effort thorough, seed 20260826, 사례 병렬
+  python3 tools/make_viewer_data.py            # effort thorough (원전은 deep), seed 20260826, 사례 병렬
 
 공개 실제 도면은 저장소에 넣지 않는다 — bench/real/public/ 에 받아 두면 포함된다.
 라이선스를 확인하지 못한 모델(publish_geometry=False)은 수치만 내보내고 형상은 내보내지 않는다.
@@ -35,7 +35,7 @@ FN = os.path.join(ROOT, "examples", "function")
 PUB = os.path.join(ROOT, "..", "bench", "real", "public")
 
 CASES = [
-    dict(key="smr_aux", src="example:smr_aux", req="smr_aux.json",
+    dict(key="smr_aux", src="example:smr_aux", req="smr_aux.json", effort="deep",   # thorough 로는 위반 5 가 남는다
          title="원전 보조건물", desc="가상 DXF · 3개 층 · 원전급 제약 + 계단 코어·복도 기능"),
     dict(key="chem_plant", src="example:chem_plant", req="chem_plant.json",
          title="석유화학 공정 플랜트", desc="가상 벡터 PDF 1:500 · 화재·폭발 이격 + 배관대 기능"),
@@ -198,7 +198,8 @@ def run_case(c):
         d, ir = t._load_ir(pid)
         asis = t.ws.rjson(os.path.join(d, "asis.json"))
         out = os.path.join(tmp, "out")
-        s = pipeline.optimize_ir(ir, out, effort="thorough", seed=SEED, asis=asis, n_candidates=N_CAND)
+        s = pipeline.optimize_ir(ir, out, effort=c.get("effort", "thorough"), seed=SEED, asis=asis,
+                                  n_candidates=N_CAND)
 
         spec = G.spec_from_dict(ir)
         notes = {b["id"]: b["_program"] for b in ir["blocks"] if b.get("_program")}
@@ -224,7 +225,7 @@ def run_case(c):
             asis_better=bool(cmp_.get("asis_better")), verdict=cmp_["verdict"],
             removed=res.get("removed", []), program=ir.get("_program_report", []),
             requirements=reqs, req_note=req.get("_note", ""), req_sources=req.get("_sources", {}),
-            result_sha256=s["result_sha256"], seed=SEED)
+            result_sha256=s["result_sha256"], seed=SEED, effort=c.get("effort", "thorough"))
         with open(os.path.join(out, "candidates.json"), encoding="utf-8") as fp:
             cands = json.load(fp)
         am = s["asis"]

@@ -932,7 +932,7 @@ TOOL_DEFS: List[dict] = [
          schema={"type": "object", "required": ["project_id"], "properties": {
              "project_id": {"type": "string"},
              "mode": {"type": "string", "enum": ["sa", "nsga"], "description": "sa=단일 목적(기본), nsga=Pareto 3목적"},
-             "effort": {"type": "string", "enum": ["quick", "normal", "thorough"]},
+             "effort": {"type": "string", "enum": ["quick", "normal", "thorough", "deep"]},
              "seed": {"type": "integer"}, "wait_seconds": {"type": "number"},
              "pick": {"type": "integer", "description": "nsga 에서 도면으로 낼 Pareto 해 번호"},
              "candidates": {"type": "integer", "minimum": 0, "maximum": 6,
@@ -950,7 +950,7 @@ TOOL_DEFS: List[dict] = [
          description="층수 민감도 스윕 — 층수를 바꿔 가며 면적·체적·목적함수를 표로 낸다 (고정 장애물 없는 IR).",
          schema={"type": "object", "required": ["project_id"], "properties": {
              "project_id": {"type": "string"}, "floors": {"type": "string"},
-             "effort": {"type": "string", "enum": ["quick", "normal", "thorough"]}, "seed": {"type": "integer"}}}),
+             "effort": {"type": "string", "enum": ["quick", "normal", "thorough", "deep"]}, "seed": {"type": "integer"}}}),
     dict(name="ga_explain", ro=True,
          description="결과 해설용 사실 묶음 (목적함수 항, 외피를 결정하는 블록, 위반, 비교). 읽기 전용.",
          schema={"type": "object", "required": ["run_id"], "properties": {"run_id": {"type": "string"}}}),

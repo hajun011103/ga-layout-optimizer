@@ -30,7 +30,11 @@ EFFORT = {
     "quick": (6000, 2),
     "normal": (20000, 3),
     "thorough": (60000, 6),
+    # deep: 블록 수로 줄이지 않는다 — 제약이 많은 큰 문제(원전 보조건물 82개 블록)에서 위반 0 해를 찾을 때.
+    # 82개 블록 기준 한 번에 40~60분.
+    "deep": (150000, 6),
 }
+NO_SCALE = {"deep"}
 
 
 class GateError(Exception):
@@ -46,7 +50,7 @@ class AsIsMismatch(Exception):
 def effort_params(effort: str, n_blocks: int) -> Dict[str, int]:
     iters, restarts = EFFORT.get(effort, EFFORT["normal"])
     # 블록이 많으면 반복당 비용이 O(n²) 로 커진다 — 반복 수를 줄여 시간을 맞춘다.
-    if n_blocks > 60:
+    if n_blocks > 60 and effort not in NO_SCALE:
         iters = max(3000, int(iters * 60 / n_blocks))
     return dict(iters=iters, restarts=restarts)
 

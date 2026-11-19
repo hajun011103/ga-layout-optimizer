@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>chat replay</title>
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:#ecebe6;font-family:"Malgun Gothic",sans-serif;display:flex;align-items:center;justify-content:center}
+.win{width:1360px;height:820px;background:#1c1c20;border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden}
+.bar{height:44px;background:#29292e;display:flex;align-items:center;gap:8px;padding:0 18px;color:#a7a59e;font-size:15px}
+.bar i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.bar b{color:#ecebe6;font-weight:600;margin-left:12px}
+.bar .r{margin-left:auto;font-size:13px;color:#86847d}
+#out{flex:1;overflow:hidden;padding:26px 34px 30px;color:#ecebe6;font-size:19px;line-height:1.6}
+.user{border:1px solid #47464d;background:#232328;border-radius:10px;padding:14px 18px;margin-bottom:22px;color:#f4f3ee}
+.user:before{content:"› ";color:#d97757;font-weight:700}
+.step{display:flex;gap:14px;align-items:baseline;margin:7px 0;opacity:0;transform:translateY(4px);transition:all .25s}
+.step.on{opacity:1;transform:none}
+.step .dot{width:20px;color:#6fcf97;flex:none}
+.step.run .dot{color:#f0b86e}
+.step .t{color:#f4f3ee}
+.step .d{color:#9b998f;font-size:16.5px}
+.say{margin-top:18px;color:#f4f3ee;font-size:17.5px;line-height:1.55}
+.say p{margin:0 0 12px}
+.say h4{font-size:17.5px;margin:12px 0 6px;color:#fff}
+.say ol{margin:0 0 6px 24px}
+.say li{margin:3px 0}
+.say table{border-collapse:collapse;margin:4px 0 2px;font-size:16px}
+.say td,.say th{border:1px solid #47464d;padding:3px 16px;text-align:left}
+.say th{color:#b9b7af;font-weight:500}
+.say .num{text-align:right;font-variant-numeric:tabular-nums}
+.say .more{color:#86847d;font-size:16px;margin-top:10px}
+.cur{display:inline-block;width:9px;height:19px;background:#d97757;vertical-align:-3px;animation:b 1s step-end infinite}
+@keyframes b{50%{opacity:0}}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i>
+    <b>Claude Code</b><span>· smr-ga 도구 연결</span><span class="r">실제 실행 기록 · 재생 속도만 조절</span></div>
+  <div id="out">
+    <div class="user" id="u"></div>
+    <div id="steps"></div>
+    <div class="say hidden" id="say">
+      <h4 style="font-size:19px;margin-top:0">FPSO 상부 배치 결과: 솔버가 찾은 배치가 현재 도면보다 작고, 필수 요건 위반도 0건입니다</h4>
+      <p>솔버 판정은 "최적화안이 같은 기준으로 현황보다 낫고 필수 요건 위반이 없다"입니다. 다만 이 예제는 가정값으로 만든 합성 도면이라 줄어든 비율을 성과로 내세울 수는 없고, 개념 검토용(NOT FOR CONSTRUCTION)으로만 봐야 합니다.</p>
+      <h4>현재 도면과 비교</h4>
+      <table>
+        <tr><th></th><th>현재 도면</th><th>최적화안(대표)</th></tr>
+        <tr><td>외곽 (m)</td><td class="num">128 × 51 × 28</td><td class="num">34 × 82 × 28</td></tr>
+        <tr><td>바닥면적</td><td class="num">6528 m²</td><td class="num">2788 m² (−57.29%)</td></tr>
+        <tr><td>연결비용</td><td class="num">1765.5</td><td class="num">1410.5 (−20.11%)</td></tr>
+        <tr><td>필수 요건 위반</td><td class="num"><b>5건</b></td><td class="num"><b>0건</b></td></tr>
+      </table>
+      <h4>후보안 3개 (4개를 요청했지만 엔진이 3개만 냈습니다)</h4>
+      <table>
+        <tr><th>후보</th><th>외곽 (m)</th><th>바닥면적</th><th>연결비용</th><th>이동량</th><th>위반</th></tr>
+        <tr><td>가장 작게 (대표)</td><td class="num">34 × 82</td><td class="num">2788 m²</td><td class="num">1410.5</td><td class="num">47.12 m</td><td class="num">0</td></tr>
+        <tr><td>동선 짧게 · 균형</td><td class="num">54 × 52</td><td class="num">2808 m²</td><td class="num">1334.5</td><td class="num">40.23 m</td><td class="num">0</td></tr>
+        <tr><td>덜 바꾸게</td><td class="num">68 × 48</td><td class="num">3264 m²</td><td class="num">1630.5</td><td class="num">32.78 m</td><td class="num">0</td></tr>
+      </table>
+      <p style="margin-top:10px">"동선 짧게 · 균형"안은 면적이 거의 같으면서 연결이 가장 짧고 정사각형에 가깝습니다. … 어느 안을 쓸지 골라 주세요.</p>
+      <div class="more">… 진행 순서, 현재 도면의 위반 5건, 가정값, 확인할 점, 재현 정보 (화면에서는 생략)</div>
+    </div>
+  </div>
+</div>
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEPS = [
+  ["예제 목록 확인", ""],
+  ["FPSO 상부 도면 불러오기", "SVG · 2개 데크 · 블록 18개 인식"],
+  ["요건 파일 읽기", "examples/function/fpso_topside.json"],
+  ["기본 설계 요건 적용", "연결 13개 · 이격 15개"],
+  ["기능 요건 적용", "파일 내용 그대로 · 기존 요건과 합침"],
+  ["요건 검사", "오류 0 · 경고 5"],
+  ["승인 · 요건 확정", "김민수 책임"],
+  ["배치 계산 (충분히 · 후보안 4개)", "113초 · 6,528 → 2,788 m² · 위반 0"],
+];
+window.start = async function(prompt, speed){
+  speed = speed || 1;
+  const u = document.getElementById("u");
+  for (let i = 0; i <= prompt.length; i += 2){ u.textContent = prompt.slice(0, i); await sleep(28 / speed); }
+  await sleep(900 / speed);
+  const box = document.getElementById("steps");
+  for (const [t, d] of STEPS){
+    const s = document.createElement("div"); s.className = "step run";
+    s.innerHTML = `<span class="dot">●</span><span class="t">${t}</span><span class="d">${d}</span>`;
+    box.appendChild(s); await sleep(30); s.classList.add("on");
+    await sleep((t.startsWith("배치 계산") ? 2200 : 900) / speed);
+    s.classList.remove("run"); s.querySelector(".dot").textContent = "✓";
+    await sleep(250 / speed);
+  }
+  await sleep(700 / speed);
+  box.style.transition = "all .5s"; box.style.display = "none";
+  const say = document.getElementById("say"); say.classList.remove("hidden");
+  const kids = [...say.children]; kids.forEach(k => k.style.opacity = 0);
+  for (const k of kids){ k.style.transition = "opacity .4s"; k.style.opacity = 1; await sleep(1400 / speed); }
+  await sleep(4500);
+  window.done = true;
+};
+</script>
+</body>
+</html>

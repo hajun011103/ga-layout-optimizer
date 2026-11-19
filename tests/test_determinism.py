@@ -170,5 +170,15 @@ class TestFreeze(unittest.TestCase):
             os.remove(f)
 
 
+class TestEffortLevels(unittest.TestCase):
+    """탐색량은 시간이 아니라 반복 수로 정한다 — 같은 effort 면 어디서 돌려도 같은 탐색이다."""
+
+    def test_large_problems_scale_except_deep(self):
+        import pipeline
+        self.assertEqual(pipeline.effort_params("thorough", 30), dict(iters=60000, restarts=6))
+        self.assertLess(pipeline.effort_params("thorough", 82)["iters"], 60000)      # 블록이 많으면 줄인다
+        self.assertEqual(pipeline.effort_params("deep", 82), dict(iters=150000, restarts=6))   # deep 은 줄이지 않는다
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
