@@ -12,6 +12,7 @@
 
 건물·플랜트 배치 계획(General Arrangement)을 결정론적 솔버로 다시 짜고, 원래 도면과 같은 기준으로 비교합니다.
 
+[![Tests](https://github.com/hajun011103/ga-layout-optimizer/actions/workflows/tests.yml/badge.svg)](https://github.com/hajun011103/ga-layout-optimizer/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8%2B-3776AB.svg?logo=python&logoColor=white)](#시작하기)
 [![Dependencies](https://img.shields.io/badge/dependencies-none%20(stdlib%20only)-success.svg)](#시작하기)
