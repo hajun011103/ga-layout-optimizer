@@ -239,6 +239,9 @@ guide/       아키텍처 · 결과 · 벤치마크 · 한계 · 연결 문서
 </picture>
 
 **MEIC Lab** (Mechanical Systems with Intelligence and Computer Vision)에서 수행한 연구입니다.
+
+기여자: [@hajun011103](https://github.com/hajun011103) · [@earthisdonda](https://github.com/earthisdonda)
+
 문의와 버그 제보는 [Issues](https://github.com/hajun011103/ga-layout-optimizer/issues)로 남겨 주십시오.
 
 ## 라이선스

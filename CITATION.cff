@@ -8,6 +8,8 @@ abstract: >-
 type: software
 authors:
   - name: "MEIC Lab"
+  - alias: "hajun011103"
+  - alias: "earthisdonda"
 version: 0.3.0
 date-released: 2026-11-20
 license: Apache-2.0
